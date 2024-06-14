@@ -9,6 +9,12 @@ class HomePage extends StatefulWidget {
 
 class _HomePage extends State<HomePage>
 {
+  List<Category> categories = [
+    Category(id: '1', imageURL: "assets/products/product5.png", name: "Hats"),
+    Category(id: '2', imageURL: "assets/products/product1.png", name: "Shirts"),
+    Category(id: '3', imageURL: "assets/products/product4.png", name: "Pants"),
+    Category(id: '4', imageURL: "assets/categories/category1.png", name: "Shoes"),
+  ];
   List<Product> products = [
     Product(
       id: "1",
@@ -102,6 +108,42 @@ class _HomePage extends State<HomePage>
                           prefixIcon: Icon(Icons.search),
                           labelText: 'Tìm kiếm',
                         ),
+                      ),
+                    ),
+                    Container(
+                      margin: EdgeInsets.all(15.0),
+                      height: 120.0,
+                      width: double.infinity,
+                      child: GridView.builder(
+                        scrollDirection: Axis.horizontal,
+                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 1,
+                          mainAxisSpacing: 5.0,
+                          // crossAxisSpacing: 15.0,
+                          // childAspectRatio: 1,
+                        ),
+                        itemCount: categories.length,
+                        itemBuilder: (context, index) {{
+                          final category = categories[index];
+                          return Column(
+                            children: [
+                              Container(
+                                width: 64.0,
+                                height: 64.0,
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.all(Radius.circular(50.0)),
+                                  border: Border.all(
+                                    color: Colors.black,
+                                    width: 2.0,
+                                  ),
+                                  color: Colors.white,
+                                ),
+                                child: Image.asset(category.imageURL, width: 4.0, height: 4.0,),
+                              ),
+                              Text(category.name, style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),),
+                            ],
+                          );
+                        }},
                       ),
                     ),
                   ],
@@ -203,4 +245,11 @@ class Product {
   final String price;
 
   Product({required this.id, required this. imageURL, required this.name, required this.price});
+}
+class Category {
+  final String id;
+  final String imageURL;
+  final String name;
+
+  Category({required this.id, required this. imageURL, required this.name});
 }
