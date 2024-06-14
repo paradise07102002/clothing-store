@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'pages/home_page.dart';
 import 'pages/favorite_page.dart';
+import 'pages/cart_page.dart';
 
 void main() {
   runApp(const MyApp());
@@ -31,6 +32,7 @@ class _MyHomePageState extends State<MyHomePage> {
   final List<Widget> pages = [
     HomePage(),
     FavoritePage(),
+    CartPage(),
   ];
   void _onTabTapped (int index) {
     setState(() {
