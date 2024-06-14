@@ -9,6 +9,12 @@ class HomePage extends StatefulWidget {
 
 class _HomePage extends State<HomePage>
 {
+  List<Category> categories = [
+    Category(id: '1', imageURL: "assets/products/product5.png", name: "Hats"),
+    Category(id: '2', imageURL: "assets/products/product1.png", name: "Shirts"),
+    Category(id: '3', imageURL: "assets/products/product4.png", name: "Pants"),
+    Category(id: '4', imageURL: "assets/categories/category1.png", name: "Shoes"),
+  ];
   List<Product> products = [
     Product(
       id: "1",
@@ -104,6 +110,42 @@ class _HomePage extends State<HomePage>
                         ),
                       ),
                     ),
+                    Container(
+                      margin: EdgeInsets.all(15.0),
+                      height: 120.0,
+                      width: double.infinity,
+                      child: GridView.builder(
+                        scrollDirection: Axis.horizontal,
+                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 1,
+                          mainAxisSpacing: 5.0,
+                          // crossAxisSpacing: 15.0,
+                          // childAspectRatio: 1,
+                        ),
+                        itemCount: categories.length,
+                        itemBuilder: (context, index) {{
+                          final category = categories[index];
+                          return Column(
+                            children: [
+                              Container(
+                                width: 64.0,
+                                height: 64.0,
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.all(Radius.circular(50.0)),
+                                  border: Border.all(
+                                    color: Colors.black,
+                                    width: 2.0,
+                                  ),
+                                  color: Colors.white,
+                                ),
+                                child: Image.asset(category.imageURL, width: 4.0, height: 4.0,),
+                              ),
+                              Text(category.name, style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),),
+                            ],
+                          );
+                        }},
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -132,18 +174,40 @@ class ProductItemWidget extends StatefulWidget {
   State<ProductItemWidget> createState() => _ProductItemWidget();
 }
 class _ProductItemWidget extends State<ProductItemWidget>{
+  bool _isFavorite = false;
+
+  void _tonggleFavorite() {
+    setState(() {
+      _isFavorite = !_isFavorite;
+    });
+  }
 
   @override
   Widget build(BuildContext context){
     return Container(
+      width: 128.0,
+      height: 128.0,
       decoration: BoxDecoration(
         borderRadius: const BorderRadius.all(Radius.circular(15.0)),
         border: Border.all(color: Colors.black, width: 1.0),
       ),
       child: Padding(
-        padding: const EdgeInsets.all(8.0),
+        padding: const EdgeInsets.all(1.0),
         child: Column(
           children: [
+            Row(
+              children: [
+                SizedBox(width: 110.0,),
+                IconButton(
+                  icon: Icon(
+                    _isFavorite ? Icons.favorite : Icons.favorite_border,
+                    color: _isFavorite ? Colors.red : Colors.grey,
+                  ),
+                  onPressed: _tonggleFavorite,
+                  iconSize: 32.0,
+                ),
+              ],
+            ),
             Image.asset(widget.product.imageURL, width: 64.0, height: 64.0,),
             Text(widget.product.name, style: const TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),),
             Text(widget.product.price, style: const TextStyle(fontSize: 12.0, color: Colors.red),),
@@ -175,7 +239,7 @@ class _ProductListWidget extends State<ProductListWidget>{
           Text(widget.title, style: const TextStyle(fontSize: 24.0, fontWeight: FontWeight.bold),),
           const SizedBox(height: 5.0,),
           SizedBox(
-            height: 130.0,
+            height: 180.0,
             width: double.infinity,
             child: GridView.builder(
               scrollDirection: Axis.horizontal,
@@ -203,4 +267,11 @@ class Product {
   final String price;
 
   Product({required this.id, required this. imageURL, required this.name, required this.price});
+}
+class Category {
+  final String id;
+  final String imageURL;
+  final String name;
+
+  Category({required this.id, required this. imageURL, required this.name});
 }
