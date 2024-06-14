@@ -174,18 +174,40 @@ class ProductItemWidget extends StatefulWidget {
   State<ProductItemWidget> createState() => _ProductItemWidget();
 }
 class _ProductItemWidget extends State<ProductItemWidget>{
+  bool _isFavorite = false;
+
+  void _tonggleFavorite() {
+    setState(() {
+      _isFavorite = !_isFavorite;
+    });
+  }
 
   @override
   Widget build(BuildContext context){
     return Container(
+      width: 128.0,
+      height: 128.0,
       decoration: BoxDecoration(
         borderRadius: const BorderRadius.all(Radius.circular(15.0)),
         border: Border.all(color: Colors.black, width: 1.0),
       ),
       child: Padding(
-        padding: const EdgeInsets.all(8.0),
+        padding: const EdgeInsets.all(1.0),
         child: Column(
           children: [
+            Row(
+              children: [
+                SizedBox(width: 110.0,),
+                IconButton(
+                  icon: Icon(
+                    _isFavorite ? Icons.favorite : Icons.favorite_border,
+                    color: _isFavorite ? Colors.red : Colors.grey,
+                  ),
+                  onPressed: _tonggleFavorite,
+                  iconSize: 32.0,
+                ),
+              ],
+            ),
             Image.asset(widget.product.imageURL, width: 64.0, height: 64.0,),
             Text(widget.product.name, style: const TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),),
             Text(widget.product.price, style: const TextStyle(fontSize: 12.0, color: Colors.red),),
@@ -217,7 +239,7 @@ class _ProductListWidget extends State<ProductListWidget>{
           Text(widget.title, style: const TextStyle(fontSize: 24.0, fontWeight: FontWeight.bold),),
           const SizedBox(height: 5.0,),
           SizedBox(
-            height: 130.0,
+            height: 180.0,
             width: double.infinity,
             child: GridView.builder(
               scrollDirection: Axis.horizontal,
