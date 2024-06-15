@@ -10,7 +10,7 @@ class HomePage extends StatefulWidget {
 class _HomePage extends State<HomePage>
 {
   List<Category> categories = [
-    Category(id: '1', imageURL: "assets/products/product5.png", name: "Hats"),
+    Category(id: '1', imageURL: "assets/products/product5.png", name: "Hataaaaaaaaaaaaaaaaaaaaaaaaaa"),
     Category(id: '2', imageURL: "assets/products/product1.png", name: "Shirts"),
     Category(id: '3', imageURL: "assets/products/product4.png", name: "Pants"),
     Category(id: '4', imageURL: "assets/categories/category1.png", name: "Shoes"),
@@ -19,8 +19,8 @@ class _HomePage extends State<HomePage>
     Product(
       id: "1",
       imageURL: "assets/products/product1.png",
-      name: "Sản phẩm 1",
-      price: "100.000 đ",
+      name: "Sản phẩm 11111111111111111111111111111111111111111111111111111111111",
+      price: "500.000.000 đ",
     ),
     Product(
       id: "2",
@@ -140,7 +140,7 @@ class _HomePage extends State<HomePage>
                                 ),
                                 child: Image.asset(category.imageURL, width: 4.0, height: 4.0,),
                               ),
-                              Text(category.name, style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),),
+                              Expanded(child: Text(category.name, style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold), overflow: TextOverflow.ellipsis,),)
                             ],
                           );
                         }},
@@ -209,8 +209,8 @@ class _ProductItemWidget extends State<ProductItemWidget>{
               ],
             ),
             Image.asset(widget.product.imageURL, width: 64.0, height: 64.0,),
-            Text(widget.product.name, style: const TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),),
-            Text(widget.product.price, style: const TextStyle(fontSize: 12.0, color: Colors.red),),
+            Expanded(child: Text(widget.product.name, style: const TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold), overflow: TextOverflow.ellipsis,),),
+            Expanded(child: Text(widget.product.price, style: const TextStyle(fontSize: 12.0, color: Colors.red), overflow: TextOverflow.ellipsis,),)
           ],
         ),
       ),
