@@ -1,4 +1,6 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 
 class CartPage extends StatefulWidget {
   const CartPage({super.key});
@@ -12,8 +14,8 @@ class _CartPage extends State<CartPage> {
     Product(
       id: "1",
       imageURL: "assets/products/product1.png",
-      name: "Sản phẩm 1",
-      price: "100.000 đ",
+      name: "Sản phẩm 1sfdddddddđsssssssssssssssssssssssssssss",
+      price: "100.000đ 777777777777777777777777777777777777777777",
     ),
     Product(
       id: "2",
@@ -96,12 +98,12 @@ class _CartPage extends State<CartPage> {
           ),
         ),
         Container(
-          margin: EdgeInsets.only(left: 35.0, right: 35.0),
+          margin: EdgeInsets.only(left: 30.0, right: 30.0),
           height: 1.0,
           color: Colors.black,
         ),
+        SizedBox(height: 25.0,),
         Container(
-          margin: EdgeInsets.only(top: 20.0),
           child: Row(
             children: [
               SizedBox(width: 35.0,),
@@ -111,17 +113,23 @@ class _CartPage extends State<CartPage> {
             ],
           ),
         ),
-        Container(
-          margin: EdgeInsets.only(top: 5.0),
-          width: 400.0,
-          height: 65.0,
-          decoration: BoxDecoration(
-            color: Colors.orange,
-            borderRadius: BorderRadius.all(Radius.circular(5.0)),
-            border: Border.all(color: Colors.red, width: 1.0,),
+        SizedBox(height: 25.0,),
+        SizedBox(
+          width: 350.0,
+          height: 50.0,
+          child: TextButton(onPressed: () {
+
+          },
+            style: TextButton.styleFrom(
+              backgroundColor: Colors.orange,
+              textStyle: TextStyle(fontSize: 18.0),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(5.0)
+              ),
             ),
-          child: Text('Thanh toán', style: TextStyle(fontSize: 24.0, fontWeight: FontWeight.bold, color: Colors.white),),
+            child: Text('Thanh toán', style: TextStyle(color: Colors.white, fontSize: 16.0, fontWeight: FontWeight.bold),),
           ),
+        ),
       ],
     );
   }
@@ -155,24 +163,30 @@ class _ProductItemWidget extends State<ProductItemWidget> {
             value: _isSelected,
             onChanged: _tonggleSelection,
           ),
-          Image.asset(widget.product.imageURL, width: 120.0, height: 120.0,),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+          SizedBox(width: 10.0,),
+          Image.asset(widget.product.imageURL, width: 96.0, height: 96.0,),
+          Expanded(child: Column(
+            // crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              SizedBox(height: 40.0,),
-              Text(widget.product.name, style: TextStyle(fontSize: 24.0, fontWeight: FontWeight.bold, color: Colors.black),),
-              Text(widget.product.price, style: TextStyle(fontSize: 18.0, color: Colors.orange),),
+              Text(widget.product.name, style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold, color: Colors.black), overflow: TextOverflow.ellipsis,),
+              Text(widget.product.price, style: TextStyle(fontSize: 16.0, color: Colors.orange), overflow: TextOverflow.ellipsis,),
+              SizedBox(height: 10.0,),
               Row(
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
+                  // SizedBox(width: 35.0,),
                   Container(
-                    height: 32.0,
-                    width: 32.0,
+                    height: 36.0,
+                    width: 36.0,
                     decoration: BoxDecoration(
-                      border: Border.all(color: Colors.black, width: 1.0),
+                      // border: Border.all(color: Colors.black, width: 1.0),
+                      borderRadius: BorderRadius.circular(25.0),
+                      color: Colors.orange
                     ),
                     child: IconButton(
                       icon: Icon(
-                        Icons.remove, color: Colors.black, size: 16.0,),
+                        Icons.remove, color: Colors.white, size: 18.0,),
                       onPressed: () {},
                     ),
                   ),
@@ -180,14 +194,16 @@ class _ProductItemWidget extends State<ProductItemWidget> {
                   Text('1', style: TextStyle(fontSize: 18.0),),
                   SizedBox(width: 10.0,),
                   Container(
-                    height: 32.0,
-                    width: 32.0,
+                    height: 36.0,
+                    width: 36.0,
                     decoration: BoxDecoration(
-                      border: Border.all(color: Colors.black, width: 1.0),
+                      // border: Border.all(color: Colors.black, width: 1.0),
+                      borderRadius: BorderRadius.circular(25.0),
+                      color: Colors.orange
                     ),
                     child: IconButton(
                       icon: Icon(
-                        Icons.add, color: Colors.black, size: 16.0,),
+                        Icons.add, color: Colors.white, size: 18.0,),
                       onPressed: () {},
                     ),
                   ),
@@ -195,6 +211,8 @@ class _ProductItemWidget extends State<ProductItemWidget> {
               ),
             ],
           ),
+          ),
+          SizedBox(width: 45.0,),
         ],
       ),
     );
