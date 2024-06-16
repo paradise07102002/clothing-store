@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-
+import 'package:clothing_store/product/detail_product.dart';
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
 
@@ -184,35 +184,39 @@ class _ProductItemWidget extends State<ProductItemWidget>{
 
   @override
   Widget build(BuildContext context){
-    return Container(
-      width: 128.0,
-      height: 128.0,
-      decoration: BoxDecoration(
-        borderRadius: const BorderRadius.all(Radius.circular(15.0)),
-        border: Border.all(color: Colors.black, width: 1.0),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(1.0),
-        child: Column(
-          children: [
-            Row(
-              children: [
-                SizedBox(width: 110.0,),
-                IconButton(
-                  icon: Icon(
-                    _isFavorite ? Icons.favorite : Icons.favorite_border,
-                    color: _isFavorite ? Colors.red : Colors.grey,
-                  ),
-                  onPressed: _tonggleFavorite,
-                  iconSize: 32.0,
-                ),
-              ],
-            ),
-            Image.asset(widget.product.imageURL, width: 64.0, height: 64.0,),
-            Expanded(child: Text(widget.product.name, style: const TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold), overflow: TextOverflow.ellipsis,),),
-            Expanded(child: Text(widget.product.price, style: const TextStyle(fontSize: 12.0, color: Colors.red), overflow: TextOverflow.ellipsis,),)
-          ],
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(context, MaterialPageRoute(builder: (context) => DetailProductPage()));
+      },
+      child: Container(
+        // width: 128.0,
+        // height: 128.0,
+        decoration: BoxDecoration(
+          borderRadius: const BorderRadius.all(Radius.circular(15.0)),
+          border: Border.all(color: Colors.black, width: 1.0),
         ),
+          child: Column(
+            children: [
+              Container(
+                child: Row(
+                  children: [
+                    SizedBox(width: 125.0,),
+                    IconButton(
+                      icon: Icon(
+                        _isFavorite ? Icons.favorite : Icons.favorite_border,
+                        color: _isFavorite ? Colors.red : Colors.grey,
+                      ),
+                      onPressed: _tonggleFavorite,
+                      iconSize: 32.0,
+                    ),
+                  ],
+                ),
+              ),
+              Image.asset(widget.product.imageURL, width: 64.0, height: 64.0,),
+              Expanded(child: Text(widget.product.name, style: const TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold), overflow: TextOverflow.ellipsis,),),
+              Expanded(child: Text(widget.product.price, style: const TextStyle(fontSize: 12.0, color: Colors.red), overflow: TextOverflow.ellipsis,),)
+            ],
+          ),
       ),
     );
   }
