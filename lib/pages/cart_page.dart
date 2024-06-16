@@ -58,36 +58,65 @@ class _CartPage extends State<CartPage> {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Container(
-          height: 120.0,
-          decoration: BoxDecoration(
-            color: Color(0xFF486EFF),
-            borderRadius: BorderRadius.only(
-                bottomRight: Radius.circular(30.0),
-                bottomLeft: Radius.circular(30.0)),
-          ),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              SizedBox(width: 15.0,),
-              SizedBox(
-                width: 48.0,
-                height: 48.0,
-                child: IconButton(
-                  icon: Icon(
-                    Icons.arrow_back, color: Colors.white, size: 48.0,),
-                  onPressed: () {},
-                  style: ButtonStyle(
-                      padding: MaterialStateProperty.all(EdgeInsets.zero)
-                  ),
+        // Container(
+        //   height: 120.0,
+        //   decoration: BoxDecoration(
+        //     color: Color(0xFF486EFF),
+        //     borderRadius: BorderRadius.only(
+        //         bottomRight: Radius.circular(30.0),
+        //         bottomLeft: Radius.circular(30.0)),
+        //   ),
+        //   child: Row(
+        //     crossAxisAlignment: CrossAxisAlignment.center,
+        //     children: [
+        //       SizedBox(width: 15.0,),
+        //       SizedBox(
+        //         width: 48.0,
+        //         height: 48.0,
+        //         child: IconButton(
+        //           icon: Icon(
+        //             Icons.arrow_back, color: Colors.white, size: 48.0,),
+        //           onPressed: () {},
+        //           style: ButtonStyle(
+        //               padding: MaterialStateProperty.all(EdgeInsets.zero)
+        //           ),
+        //         ),
+        //       ),
+        //       const SizedBox(width: 120.0,),
+        //       Text('Cart', style: TextStyle(color: Colors.white,
+        //           fontSize: 24.0,
+        //           fontWeight: FontWeight.bold),)
+        //     ],
+        //   ),
+        // ),
+        SizedBox(height: 35.0,),
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            SizedBox(width: 15.0,),
+            SizedBox(
+              width: 48.0,
+              height: 48.0,
+              child: IconButton(
+                icon: Icon(
+                  Icons.arrow_back, color: Colors.black, size: 48.0,),
+                onPressed: () {},
+                style: ButtonStyle(
+                    padding: MaterialStateProperty.all(EdgeInsets.zero)
                 ),
               ),
-              const SizedBox(width: 120.0,),
-              Text('Cart', style: TextStyle(color: Colors.white,
-                  fontSize: 24.0,
-                  fontWeight: FontWeight.bold),)
-            ],
-          ),
+            ),
+            const SizedBox(width: 120.0,),
+            Text('Cart', style: TextStyle(color: Colors.black,
+                fontSize: 24.0,
+                fontWeight: FontWeight.bold),)
+          ],
+        ),
+        SizedBox(height: 15.0,),
+        Container(
+          height: 1.0,
+          width: 350.0,
+          color: Colors.black,
         ),
         Container(
           margin: EdgeInsets.all(15.0),
