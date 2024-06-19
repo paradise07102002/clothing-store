@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:clothing_store/product/detail_product.dart';
+import 'package:clothing_store/api_service.dart';
+import 'package:clothing_store/sanpham.dart';
+
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
 
@@ -15,50 +18,50 @@ class _HomePage extends State<HomePage>
     Category(id: '3', imageURL: "assets/products/product4.png", name: "Pants"),
     Category(id: '4', imageURL: "assets/categories/category1.png", name: "Shoes"),
   ];
-  List<Product> products = [
-    Product(
-      id: "1",
-      imageURL: "assets/products/product1.png",
-      name: "Sản phẩm 11111111111111111111111111111111111111111111111111111111111",
-      price: "500.000.000 đ",
-    ),
-    Product(
-      id: "2",
-      imageURL: "assets/products/product2.png",
-      name: "Sản phẩm 2",
-      price: "100.000 đ",
-    ),
-    Product(
-      id: "3",
-      imageURL: "assets/products/product3.png",
-      name: "Sản phẩm 3",
-      price: "100.000 đ",
-    ),
-    Product(
-      id: "4",
-      imageURL: "assets/products/product4.png",
-      name: "Sản phẩm 4",
-      price: "100.000 đ",
-    ),
-    Product(
-      id: "5",
-      imageURL: "assets/products/product5.png",
-      name: "Sản phẩm 5",
-      price: "100.000 đ",
-    ),
-    Product(
-      id: "6",
-      imageURL: "assets/products/product6.png",
-      name: "Sản phẩm 6",
-      price: "100.000 đ",
-    ),
-    Product(
-      id: "7",
-      imageURL: "assets/products/product7.png",
-      name: "Sản phẩm 7",
-      price: "100.000 đ",
-    )
-  ];
+  // List<Product> products = [
+  //   Product(
+  //     id: "1",
+  //     imageURL: "assets/products/product1.png",
+  //     name: "Sản phẩm 11111111111111111111111111111111111111111111111111111111111",
+  //     price: "500.000.000 đ",
+  //   ),
+  //   Product(
+  //     id: "2",
+  //     imageURL: "assets/products/product2.png",
+  //     name: "Sản phẩm 2",
+  //     price: "100.000 đ",
+  //   ),
+  //   Product(
+  //     id: "3",
+  //     imageURL: "assets/products/product3.png",
+  //     name: "Sản phẩm 3",
+  //     price: "100.000 đ",
+  //   ),
+  //   Product(
+  //     id: "4",
+  //     imageURL: "assets/products/product4.png",
+  //     name: "Sản phẩm 4",
+  //     price: "100.000 đ",
+  //   ),
+  //   Product(
+  //     id: "5",
+  //     imageURL: "assets/products/product5.png",
+  //     name: "Sản phẩm 5",
+  //     price: "100.000 đ",
+  //   ),
+  //   Product(
+  //     id: "6",
+  //     imageURL: "assets/products/product6.png",
+  //     name: "Sản phẩm 6",
+  //     price: "100.000 đ",
+  //   ),
+  //   Product(
+  //     id: "7",
+  //     imageURL: "assets/products/product7.png",
+  //     name: "Sản phẩm 7",
+  //     price: "100.000 đ",
+  //   )
+  // ];
   @override
   Widget build(BuildContext context)
   {
@@ -153,9 +156,9 @@ class _HomePage extends State<HomePage>
           ),
           Column(
             children: [
-              ProductListWidget(title: 'Sản phẩm bán chạy', products: products),
-              ProductListWidget(title: 'Sản phẩm mới nhất', products: products),
-              ProductListWidget(title: 'Sản phẩm khác', products: products),
+              ProductListWidget(title: 'Sản phẩm bán chạy'),
+              ProductListWidget(title: 'Sản phẩm mới nhất'),
+              ProductListWidget(title: 'Sản phẩm khác'),
             ],
           ),
         ],
@@ -166,14 +169,14 @@ class _HomePage extends State<HomePage>
 
 //UI FOR ITEM PRODUCT
 class ProductItemWidget extends StatefulWidget {
-  const ProductItemWidget({super.key, required this.product});
-
   final Product product;
+  ProductItemWidget({super.key, required this.product});
 
   @override
   State<ProductItemWidget> createState() => _ProductItemWidget();
 }
 class _ProductItemWidget extends State<ProductItemWidget>{
+
   bool _isFavorite = false;
 
   void _tonggleFavorite() {
@@ -212,9 +215,9 @@ class _ProductItemWidget extends State<ProductItemWidget>{
                   ],
                 ),
               ),
-              Image.asset(widget.product.imageURL, width: 64.0, height: 64.0,),
-              Expanded(child: Text(widget.product.name, style: const TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold), overflow: TextOverflow.ellipsis,),),
-              Expanded(child: Text(widget.product.price, style: const TextStyle(fontSize: 12.0, color: Colors.red), overflow: TextOverflow.ellipsis,),)
+              Image.network(widget.product.image ?? 'https://tse3.mm.bing.net/th?id=OIP.EWcVoB5_4jMLgyUi0Kx6MgAAAA&pid=Api&P=0&h=180', width: 64.0, height: 64.0,),
+              Expanded(child: Text(widget.product.name ?? '', style: const TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold), overflow: TextOverflow.ellipsis,),),
+              Expanded(child: Text('${widget.product.price} đ', style: const TextStyle(fontSize: 12.0, color: Colors.red), overflow: TextOverflow.ellipsis,),)
             ],
           ),
       ),
@@ -224,54 +227,73 @@ class _ProductItemWidget extends State<ProductItemWidget>{
 
 //UI FOR LIST PRODUCT
 class ProductListWidget extends StatefulWidget {
-  const ProductListWidget({super.key, required this.title, required this.products,});
+  ProductListWidget({super.key, required this.title});
 
   final String title;
-  final List<Product> products;
 
   @override
   State<ProductListWidget> createState() => _ProductListWidget();
 }
 class _ProductListWidget extends State<ProductListWidget>{
+
+  late Future<List<Product>> products;
+  @override
+  void initState() {
+    super.initState();
+    products = fetchProducts();
+  }
   @override
   Widget build(BuildContext context){
-    return Container(
-      margin: const EdgeInsets.only(left: 15.0, top: 30.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(widget.title, style: const TextStyle(fontSize: 24.0, fontWeight: FontWeight.bold),),
-          const SizedBox(height: 5.0,),
-          SizedBox(
-            height: 180.0,
-            width: double.infinity,
-            child: GridView.builder(
-              scrollDirection: Axis.horizontal,
-              itemCount: widget.products.length,
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 1,
-                mainAxisSpacing: 25.0
+    return FutureBuilder<List<Product>>(
+        future: products,
+        builder: (context, snapshot) {
+          if(snapshot.connectionState == ConnectionState.waiting) {
+            return Center(child: CircularProgressIndicator());
+          } else if(snapshot.hasError) {
+            return Center(child: Text('Failed to load products'));
+          } else if(!snapshot.hasData && snapshot.data!.isEmpty) {
+            return Center(child: Text('No products found'));
+          } else {
+            return Container(
+              margin: const EdgeInsets.only(left: 15.0, top: 30.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(widget.title, style: const TextStyle(fontSize: 24.0, fontWeight: FontWeight.bold),),
+                  const SizedBox(height: 5.0,),
+                  SizedBox(
+                    height: 180.0,
+                    width: double.infinity,
+                    child: GridView.builder(
+                      scrollDirection: Axis.horizontal,
+                      itemCount: snapshot.data!.length,
+                      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 1,
+                          mainAxisSpacing: 25.0
+                      ),
+                      itemBuilder: (context, index) {
+                        final product = snapshot.data![index];
+                        return ProductItemWidget(product: product,);
+                      },
+                    ),
+                  )
+                ],
               ),
-              itemBuilder: (context, index) {
-                final product = widget.products[index];
-                return ProductItemWidget(product: product);
-              },
-            ),
-          )
-        ],
-      ),
+            );
+          }
+    }
     );
   }
 }
 
-class Product {
-  final String id;
-  final String imageURL;
-  final String name;
-  final String price;
-
-  Product({required this.id, required this. imageURL, required this.name, required this.price});
-}
+// class Product {
+//   final String id;
+//   final String imageURL;
+//   final String name;
+//   final String price;
+//
+//   Product({required this.id, required this. imageURL, required this.name, required this.price});
+// }
 class Category {
   final String id;
   final String imageURL;

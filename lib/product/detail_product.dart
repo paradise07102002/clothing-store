@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
+
 class DetailProductPage extends StatefulWidget {
   const DetailProductPage({super.key});
 
