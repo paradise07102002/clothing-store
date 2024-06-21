@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'pages/home_page.dart';
 import 'pages/favorite_page.dart';
 import 'pages/cart_page.dart';
+import 'pages/register_page.dart';
 
 void main() {
   runApp(const MyApp());
@@ -33,6 +34,7 @@ class _MyHomePageState extends State<MyHomePage> {
     HomePage(),
     FavoritePage(),
     CartPage(),
+    RegisterPage(),
   ];
   void _onTabTapped (int index) {
     setState(() {

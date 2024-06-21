@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:clothing_store/product/detail_product.dart';
+import 'package:clothing_store/pages/detail_product.dart';
+import 'register_page.dart';
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
 
@@ -187,6 +188,7 @@ class _ProductItemWidget extends State<ProductItemWidget>{
     return GestureDetector(
       onTap: () {
         Navigator.push(context, MaterialPageRoute(builder: (context) => DetailProductPage()));
+        // Navigator.push(context, MaterialPageRoute(builder: (context) => RegisterPage()));
       },
       child: Container(
         // width: 128.0,
