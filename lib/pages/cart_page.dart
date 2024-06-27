@@ -2,6 +2,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
+import '../model/product.dart';
+
 class CartPage extends StatefulWidget {
   const CartPage({super.key});
 
@@ -174,7 +176,7 @@ class ProductItemWidget extends StatefulWidget{
 }
 class _ProductItemWidget extends State<ProductItemWidget> {
   bool _isSelected = false;
-  void _tonggleSelection(bool? newValue) {
+  void _toggleSelection(bool? newValue) {
     setState(() {
       _isSelected = newValue ?? false;
     });
@@ -190,7 +192,7 @@ class _ProductItemWidget extends State<ProductItemWidget> {
         children: [
           Checkbox(
             value: _isSelected,
-            onChanged: _tonggleSelection,
+            onChanged: _toggleSelection,
           ),
           SizedBox(width: 10.0,),
           Image.asset(widget.product.imageURL, width: 96.0, height: 96.0,),
@@ -281,11 +283,3 @@ class _ProductListWidget extends State<ProductListWidget> {
 }
 
 
-class Product {
-  final String id;
-  final String imageURL;
-  final String name;
-  final String price;
-
-  Product({required this.id, required this. imageURL, required this.name, required this.price});
-}

@@ -1,6 +1,10 @@
+import 'package:clothing_store/pages/widget/product_widget/product_list_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:clothing_store/pages/detail_product.dart';
 import 'register_page.dart';
+import '../model/category.dart';
+import '../model/product.dart';
+
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
 
@@ -8,19 +12,20 @@ class HomePage extends StatefulWidget {
   State<HomePage> createState() => _HomePage();
 }
 
-class _HomePage extends State<HomePage>
-{
+class _HomePage extends State<HomePage> {
   List<Category> categories = [
-    Category(id: '1', imageURL: "assets/products/product5.png", name: "Hataaaaaaaaaaaaaaaaaaaaaaaaaa"),
+    Category(id: '1', imageURL: "assets/products/product5.png", name: "Hat"),
     Category(id: '2', imageURL: "assets/products/product1.png", name: "Shirts"),
     Category(id: '3', imageURL: "assets/products/product4.png", name: "Pants"),
-    Category(id: '4', imageURL: "assets/categories/category1.png", name: "Shoes"),
+    Category(
+        id: '4', imageURL: "assets/categories/category1.png", name: "Shoes"),
   ];
   List<Product> products = [
     Product(
       id: "1",
       imageURL: "assets/products/product1.png",
-      name: "Sản phẩm 11111111111111111111111111111111111111111111111111111111111",
+      name:
+          "Sản phẩm 11111111111111111111111111111111111111111111111111111111111",
       price: "500.000.000 đ",
     ),
     Product(
@@ -61,8 +66,7 @@ class _HomePage extends State<HomePage>
     )
   ];
   @override
-  Widget build(BuildContext context)
-  {
+  Widget build(BuildContext context) {
     return SingleChildScrollView(
       child: Column(
         children: [
@@ -86,7 +90,13 @@ class _HomePage extends State<HomePage>
                         child: AppBar(
                           title: const Align(
                             alignment: Alignment.center,
-                            child: Text('Fashion shops', style: TextStyle(color: Colors.white, fontSize: 24.0, fontWeight: FontWeight.bold),),
+                            child: Text(
+                              'Fashion shops',
+                              style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 24.0,
+                                  fontWeight: FontWeight.bold),
+                            ),
                           ),
                           backgroundColor: Colors.transparent,
                         ),
@@ -101,11 +111,11 @@ class _HomePage extends State<HomePage>
                         borderRadius: BorderRadius.circular(30.0),
                       ),
                       padding: const EdgeInsets.all(0.5),
-                      child: const TextField( // Replace Row with TextField
+                      child: const TextField(
+                        // Replace Row with TextField
                         decoration: InputDecoration(
-                          border: UnderlineInputBorder(
-                              borderSide: BorderSide.none
-                          ),
+                          border:
+                              UnderlineInputBorder(borderSide: BorderSide.none),
                           prefixIcon: Icon(Icons.search),
                           labelText: 'Tìm kiếm',
                         ),
@@ -124,27 +134,42 @@ class _HomePage extends State<HomePage>
                           // childAspectRatio: 1,
                         ),
                         itemCount: categories.length,
-                        itemBuilder: (context, index) {{
-                          final category = categories[index];
-                          return Column(
-                            children: [
-                              Container(
-                                width: 64.0,
-                                height: 64.0,
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.all(Radius.circular(50.0)),
-                                  border: Border.all(
-                                    color: Colors.black,
-                                    width: 2.0,
+                        itemBuilder: (context, index) {
+                          {
+                            final category = categories[index];
+                            return Column(
+                              children: [
+                                Container(
+                                  width: 64.0,
+                                  height: 64.0,
+                                  decoration: BoxDecoration(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(50.0)),
+                                    border: Border.all(
+                                      color: Colors.black,
+                                      width: 2.0,
+                                    ),
+                                    color: Colors.white,
                                   ),
-                                  color: Colors.white,
+                                  child: Image.asset(
+                                    category.imageURL,
+                                    width: 4.0,
+                                    height: 4.0,
+                                  ),
                                 ),
-                                child: Image.asset(category.imageURL, width: 4.0, height: 4.0,),
-                              ),
-                              Expanded(child: Text(category.name, style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold), overflow: TextOverflow.ellipsis,),)
-                            ],
-                          );
-                        }},
+                                Expanded(
+                                  child: Text(
+                                    category.name,
+                                    style: TextStyle(
+                                        fontSize: 16.0,
+                                        fontWeight: FontWeight.bold),
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                )
+                              ],
+                            );
+                          }
+                        },
                       ),
                     ),
                   ],
@@ -163,121 +188,4 @@ class _HomePage extends State<HomePage>
       ),
     );
   }
-}
-
-//UI FOR ITEM PRODUCT
-class ProductItemWidget extends StatefulWidget {
-  const ProductItemWidget({super.key, required this.product});
-
-  final Product product;
-
-  @override
-  State<ProductItemWidget> createState() => _ProductItemWidget();
-}
-class _ProductItemWidget extends State<ProductItemWidget>{
-  bool _isFavorite = false;
-
-  void _tonggleFavorite() {
-    setState(() {
-      _isFavorite = !_isFavorite;
-    });
-  }
-
-  @override
-  Widget build(BuildContext context){
-    return GestureDetector(
-      onTap: () {
-        Navigator.push(context, MaterialPageRoute(builder: (context) => DetailProductPage()));
-        // Navigator.push(context, MaterialPageRoute(builder: (context) => RegisterPage()));
-      },
-      child: Container(
-        // width: 128.0,
-        // height: 128.0,
-        decoration: BoxDecoration(
-          borderRadius: const BorderRadius.all(Radius.circular(15.0)),
-          border: Border.all(color: Colors.black, width: 1.0),
-        ),
-          child: Column(
-            children: [
-              Container(
-                child: Row(
-                  children: [
-                    SizedBox(width: 125.0,),
-                    IconButton(
-                      icon: Icon(
-                        _isFavorite ? Icons.favorite : Icons.favorite_border,
-                        color: _isFavorite ? Colors.red : Colors.grey,
-                      ),
-                      onPressed: _tonggleFavorite,
-                      iconSize: 32.0,
-                    ),
-                  ],
-                ),
-              ),
-              Image.asset(widget.product.imageURL, width: 64.0, height: 64.0,),
-              Expanded(child: Text(widget.product.name, style: const TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold), overflow: TextOverflow.ellipsis,),),
-              Expanded(child: Text(widget.product.price, style: const TextStyle(fontSize: 12.0, color: Colors.red), overflow: TextOverflow.ellipsis,),)
-            ],
-          ),
-      ),
-    );
-  }
-}
-
-//UI FOR LIST PRODUCT
-class ProductListWidget extends StatefulWidget {
-  const ProductListWidget({super.key, required this.title, required this.products,});
-
-  final String title;
-  final List<Product> products;
-
-  @override
-  State<ProductListWidget> createState() => _ProductListWidget();
-}
-class _ProductListWidget extends State<ProductListWidget>{
-  @override
-  Widget build(BuildContext context){
-    return Container(
-      margin: const EdgeInsets.only(left: 15.0, top: 30.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(widget.title, style: const TextStyle(fontSize: 24.0, fontWeight: FontWeight.bold),),
-          const SizedBox(height: 5.0,),
-          SizedBox(
-            height: 180.0,
-            width: double.infinity,
-            child: GridView.builder(
-              scrollDirection: Axis.horizontal,
-              itemCount: widget.products.length,
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 1,
-                mainAxisSpacing: 25.0
-              ),
-              itemBuilder: (context, index) {
-                final product = widget.products[index];
-                return ProductItemWidget(product: product);
-              },
-            ),
-          )
-        ],
-      ),
-    );
-  }
-}
-
-class Product {
-  final String id;
-  final String imageURL;
-  final String name;
-  final String price;
-
-  Product({required this.id, required this. imageURL, required this.name, required this.price});
-}
-class Category {
-  final String id;
-  final String imageURL;
-  final String name;
-
-  Category({required this.id, required this. imageURL, required this.name});
 }
