@@ -1,6 +1,8 @@
+import 'package:clothing_store/model/category.dart';
 import 'package:flutter/material.dart';
 import 'package:clothing_store/pages/detail_product.dart';
-import 'register_page.dart';
+import 'package:clothing_store/api/api_service.dart';
+
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
 
@@ -10,12 +12,6 @@ class HomePage extends StatefulWidget {
 
 class _HomePage extends State<HomePage>
 {
-  List<Category> categories = [
-    Category(id: '1', imageURL: "assets/products/product5.png", name: "Hataaaaaaaaaaaaaaaaaaaaaaaaaa"),
-    Category(id: '2', imageURL: "assets/products/product1.png", name: "Shirts"),
-    Category(id: '3', imageURL: "assets/products/product4.png", name: "Pants"),
-    Category(id: '4', imageURL: "assets/categories/category1.png", name: "Shoes"),
-  ];
   List<Product> products = [
     Product(
       id: "1",
@@ -111,42 +107,12 @@ class _HomePage extends State<HomePage>
                         ),
                       ),
                     ),
-                    Container(
-                      margin: EdgeInsets.all(15.0),
-                      height: 120.0,
-                      width: double.infinity,
-                      child: GridView.builder(
-                        scrollDirection: Axis.horizontal,
-                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 1,
-                          mainAxisSpacing: 5.0,
-                          // crossAxisSpacing: 15.0,
-                          // childAspectRatio: 1,
-                        ),
-                        itemCount: categories.length,
-                        itemBuilder: (context, index) {{
-                          final category = categories[index];
-                          return Column(
-                            children: [
-                              Container(
-                                width: 64.0,
-                                height: 64.0,
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.all(Radius.circular(50.0)),
-                                  border: Border.all(
-                                    color: Colors.black,
-                                    width: 2.0,
-                                  ),
-                                  color: Colors.white,
-                                ),
-                                child: Image.asset(category.imageURL, width: 4.0, height: 4.0,),
-                              ),
-                              Expanded(child: Text(category.name, style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold), overflow: TextOverflow.ellipsis,),)
-                            ],
-                          );
-                        }},
-                      ),
-                    ),
+                Container(
+                  margin: const EdgeInsets.all(15.0),
+                  height: 120.0,
+                  width: double.infinity,
+                  child: const CategoryWidget(),
+                ),
                   ],
                 ),
               ),
@@ -187,7 +153,7 @@ class _ProductItemWidget extends State<ProductItemWidget>{
   Widget build(BuildContext context){
     return GestureDetector(
       onTap: () {
-        Navigator.push(context, MaterialPageRoute(builder: (context) => DetailProductPage()));
+        Navigator.push(context, MaterialPageRoute(builder: (context) => const DetailProductPage()));
         // Navigator.push(context, MaterialPageRoute(builder: (context) => RegisterPage()));
       },
       child: Container(
@@ -199,20 +165,18 @@ class _ProductItemWidget extends State<ProductItemWidget>{
         ),
           child: Column(
             children: [
-              Container(
-                child: Row(
-                  children: [
-                    SizedBox(width: 125.0,),
-                    IconButton(
-                      icon: Icon(
-                        _isFavorite ? Icons.favorite : Icons.favorite_border,
-                        color: _isFavorite ? Colors.red : Colors.grey,
-                      ),
-                      onPressed: _tonggleFavorite,
-                      iconSize: 32.0,
+              Row(
+                children: [
+                  const SizedBox(width: 125.0,),
+                  IconButton(
+                    icon: Icon(
+                      _isFavorite ? Icons.favorite : Icons.favorite_border,
+                      color: _isFavorite ? Colors.red : Colors.grey,
                     ),
-                  ],
-                ),
+                    onPressed: _tonggleFavorite,
+                    iconSize: 32.0,
+                  ),
+                ],
               ),
               Image.asset(widget.product.imageURL, width: 64.0, height: 64.0,),
               Expanded(child: Text(widget.product.name, style: const TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold), overflow: TextOverflow.ellipsis,),),
@@ -224,6 +188,73 @@ class _ProductItemWidget extends State<ProductItemWidget>{
   }
 }
 
+//Category
+class CategoryWidget extends StatefulWidget {
+  const CategoryWidget({super.key});
+
+  @override
+  State<CategoryWidget> createState() => _CategoryWidget();
+}
+class _CategoryWidget extends State<CategoryWidget> {
+  late Future<List<Result>> futureCategories;
+
+  @override
+  void initState() {
+    super.initState();
+    futureCategories = fetchCategories();
+  }
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<List<Result>>(
+      future: futureCategories,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator());
+        } else if (snapshot.hasError) {
+          // debugPrint('Snapshot error: ${snapshot.error}');
+          // return Center(child: Text('Lỗi'));
+          return Center(child: Text('Snapshot error: ${snapshot.error}'));
+        } else if(!snapshot.hasData || snapshot.data!.isEmpty) {
+          debugPrint('No categories found');
+          return const Center(child: Text('No Category found'));
+        } else {
+          return GridView.builder(
+            scrollDirection: Axis.horizontal,
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 1,
+              mainAxisSpacing: 5.0,
+              // crossAxisSpacing: 15.0,
+              // childAspectRatio: 1,
+            ),
+            itemCount: snapshot.data!.length,
+            itemBuilder: (context, index) {{
+              Result category = snapshot.data![index];
+              return Column(
+                children: [
+                  Container(
+                    width: 64.0,
+                    height: 64.0,
+                    padding: const EdgeInsets.all(5.0),
+                    decoration: BoxDecoration(
+                      borderRadius: const BorderRadius.all(Radius.circular(32.0)),
+                      border: Border.all(
+                        color: Colors.black,
+                        width: 2.0,
+                      ),
+                      color: Colors.white,
+                    ),
+                    child: Image.network(category.thumbnail ?? 'https://tse3.mm.bing.net/th?id=OIP.YEvB14OZEQZ2oALiFkJj-wHaE8&pid=Api&P=0&h=180'),
+                  ),
+                  Expanded(child: Text(category.name ?? 'Error', style: const TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold), overflow: TextOverflow.ellipsis,),)
+                ],
+              );
+            }},
+          );
+        }
+      },
+    );
+  }
+}
 //UI FOR LIST PRODUCT
 class ProductListWidget extends StatefulWidget {
   const ProductListWidget({super.key, required this.title, required this.products,});
@@ -273,11 +304,4 @@ class Product {
   final String price;
 
   Product({required this.id, required this. imageURL, required this.name, required this.price});
-}
-class Category {
-  final String id;
-  final String imageURL;
-  final String name;
-
-  Category({required this.id, required this. imageURL, required this.name});
 }

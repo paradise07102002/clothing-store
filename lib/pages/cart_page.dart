@@ -89,16 +89,16 @@ class _CartPage extends State<CartPage> {
         //     ],
         //   ),
         // ),
-        SizedBox(height: 35.0,),
+        const SizedBox(height: 35.0,),
         Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            SizedBox(width: 15.0,),
+            const SizedBox(width: 15.0,),
             SizedBox(
               width: 48.0,
               height: 48.0,
               child: IconButton(
-                icon: Icon(
+                icon: const Icon(
                   Icons.arrow_back, color: Colors.black, size: 48.0,),
                 onPressed: () {},
                 style: ButtonStyle(
@@ -107,19 +107,19 @@ class _CartPage extends State<CartPage> {
               ),
             ),
             const SizedBox(width: 120.0,),
-            Text('Cart', style: TextStyle(color: Colors.black,
+            const Text('Cart', style: TextStyle(color: Colors.black,
                 fontSize: 24.0,
                 fontWeight: FontWeight.bold),)
           ],
         ),
-        SizedBox(height: 15.0,),
+        const SizedBox(height: 15.0,),
         Container(
           height: 1.0,
           width: 350.0,
           color: Colors.black,
         ),
         Container(
-          margin: EdgeInsets.all(15.0),
+          margin: const EdgeInsets.all(15.0),
           child: Column(
             children: [
               ProductListWidget(products: products),
@@ -127,13 +127,13 @@ class _CartPage extends State<CartPage> {
           ),
         ),
         Container(
-          margin: EdgeInsets.only(left: 30.0, right: 30.0),
+          margin: const EdgeInsets.only(left: 30.0, right: 30.0),
           height: 1.0,
           color: Colors.black,
         ),
-        SizedBox(height: 25.0,),
+        const SizedBox(height: 25.0,),
         Container(
-          child: Row(
+          child: const Row(
             children: [
               SizedBox(width: 35.0,),
               Text('Tổng tiền', style: TextStyle(fontSize: 24.0, fontWeight: FontWeight.bold, color: Colors.black),),
@@ -142,7 +142,7 @@ class _CartPage extends State<CartPage> {
             ],
           ),
         ),
-        SizedBox(height: 25.0,),
+        const SizedBox(height: 25.0,),
         SizedBox(
           width: 350.0,
           height: 50.0,
@@ -151,12 +151,12 @@ class _CartPage extends State<CartPage> {
           },
             style: TextButton.styleFrom(
               backgroundColor: Colors.orange,
-              textStyle: TextStyle(fontSize: 18.0),
+              textStyle: const TextStyle(fontSize: 18.0),
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(5.0)
               ),
             ),
-            child: Text('Thanh toán', style: TextStyle(color: Colors.white, fontSize: 16.0, fontWeight: FontWeight.bold),),
+            child: const Text('Thanh toán', style: TextStyle(color: Colors.white, fontSize: 16.0, fontWeight: FontWeight.bold),),
           ),
         ),
       ],
@@ -183,7 +183,7 @@ class _ProductItemWidget extends State<ProductItemWidget> {
   Widget build(BuildContext context){
     return Container(
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.all(Radius.circular(5.0)),
+        borderRadius: const BorderRadius.all(Radius.circular(5.0)),
         border:Border.all(color: Colors.black, width: 1.0),
       ),
       child: Row(
@@ -192,15 +192,15 @@ class _ProductItemWidget extends State<ProductItemWidget> {
             value: _isSelected,
             onChanged: _tonggleSelection,
           ),
-          SizedBox(width: 10.0,),
+          const SizedBox(width: 10.0,),
           Image.asset(widget.product.imageURL, width: 96.0, height: 96.0,),
           Expanded(child: Column(
             // crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text(widget.product.name, style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold, color: Colors.black), overflow: TextOverflow.ellipsis,),
-              Text(widget.product.price, style: TextStyle(fontSize: 16.0, color: Colors.orange), overflow: TextOverflow.ellipsis,),
-              SizedBox(height: 10.0,),
+              Text(widget.product.name, style: const TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold, color: Colors.black), overflow: TextOverflow.ellipsis,),
+              Text(widget.product.price, style: const TextStyle(fontSize: 16.0, color: Colors.orange), overflow: TextOverflow.ellipsis,),
+              const SizedBox(height: 10.0,),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -214,14 +214,14 @@ class _ProductItemWidget extends State<ProductItemWidget> {
                       color: Colors.orange
                     ),
                     child: IconButton(
-                      icon: Icon(
+                      icon: const Icon(
                         Icons.remove, color: Colors.white, size: 18.0,),
                       onPressed: () {},
                     ),
                   ),
-                  SizedBox(width: 10.0,),
-                  Text('1', style: TextStyle(fontSize: 18.0),),
-                  SizedBox(width: 10.0,),
+                  const SizedBox(width: 10.0,),
+                  const Text('1', style: TextStyle(fontSize: 18.0),),
+                  const SizedBox(width: 10.0,),
                   Container(
                     height: 36.0,
                     width: 36.0,
@@ -231,7 +231,7 @@ class _ProductItemWidget extends State<ProductItemWidget> {
                       color: Colors.orange
                     ),
                     child: IconButton(
-                      icon: Icon(
+                      icon: const Icon(
                         Icons.add, color: Colors.white, size: 18.0,),
                       onPressed: () {},
                     ),
@@ -241,7 +241,7 @@ class _ProductItemWidget extends State<ProductItemWidget> {
             ],
           ),
           ),
-          SizedBox(width: 45.0,),
+          const SizedBox(width: 45.0,),
         ],
       ),
     );
@@ -262,11 +262,11 @@ class _ProductListWidget extends State<ProductListWidget> {
     return Container(
       height: 500.0,
       width: double.infinity,
-      margin: EdgeInsets.only(left: 15.0, right: 15.0),
+      margin: const EdgeInsets.only(left: 15.0, right: 15.0),
       child: GridView.builder(
         scrollDirection: Axis.vertical,
         itemCount: widget.products.length,
-        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 1,
           childAspectRatio: 1.9,
           mainAxisSpacing: 25.0,
