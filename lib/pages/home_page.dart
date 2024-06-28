@@ -25,7 +25,7 @@ class _HomePage extends State<HomePage> {
       id: "1",
       imageURL: "assets/products/product1.png",
       name:
-          "Sản phẩm 11111111111111111111111111111111111111111111111111111111111",
+          "Sản phẩm 1",
       price: "500.000.000 đ",
     ),
     Product(
