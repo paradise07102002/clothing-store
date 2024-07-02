@@ -243,7 +243,9 @@ class _CategoryWidget extends State<CategoryWidget> {
                       ),
                       color: Colors.white,
                     ),
-                    child: Image.network(category.thumbnail ?? 'https://tse3.mm.bing.net/th?id=OIP.YEvB14OZEQZ2oALiFkJj-wHaE8&pid=Api&P=0&h=180'),
+                    child: ClipOval(
+                      child: Image.network(category.thumbnail ?? 'https://tse3.mm.bing.net/th?id=OIP.YEvB14OZEQZ2oALiFkJj-wHaE8&pid=Api&P=0&h=180', fit: BoxFit.contain),
+                    ),
                   ),
                   Expanded(child: Text(category.name ?? 'Error', style: const TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold), overflow: TextOverflow.ellipsis,),)
                 ],

@@ -3,7 +3,43 @@ import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
 import 'package:clothing_store/model/signup.dart';
 import 'package:clothing_store/model/category.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
+//Login
+Future<void> loginUser(String username, String password) async {
+  final String apiUrl = 'http://10.0.2.2:5117/api/User/login';
+
+  try {
+    final response = await http.post(
+      Uri.parse(apiUrl),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode(<String, String>{
+        'username': username,
+        'password': password,
+      }),
+    );
+    if(response.statusCode == 200) {
+      final Map<String, dynamic> responseData =jsonDecode(response.body);
+      final String token = responseData['result']['token'];
+      final Map<String, dynamic> user = responseData['result']['user'];
+
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      await prefs.setString('token', token);
+      await prefs.setString('user', jsonEncode(user));
+
+      print("Login successful");
+    } else {
+      print('Failed to login. Status code: ${response.statusCode}');
+      print('Response body: ${response.body}');
+      throw Exception('Failed to login');
+    }
+  } catch(e) {
+    print('Error: $e');
+    throw Exception('Failed to login');
+  }
+}
 //SignUp
 Future<void> registerUser(SignUp signUp) async {
   final String apiUrl = 'http://10.0.2.2:5117/api/User/signUp';
@@ -30,37 +66,6 @@ Future<void> registerUser(SignUp signUp) async {
   }
 }
 
-// //Get Category
-// Future<List<Category>> fetchCategories() async {
-//   final response = await http.get(Uri.parse('http://10.0.2.2:5117/api/Category'));
-//
-//   if (response.statusCode == 200) {
-//     List<dynamic> data = json.decode(response.body);
-//     return data.map((json) => Category.fromJson(json)).toList();
-//   } else {
-//     debugPrint('Failed to load categories: ${response.statusCode}');
-//     throw Exception('Failed to load Categories');
-//   }
-// }
-
-// Future<List<Result>> fetchCategories() async {
-//   final response = await http.get(Uri.parse('http://10.0.2.2:5117/api/Category'));
-//   if (response.statusCode == 200) {
-//     // Giải mã phản hồi JSON thành một bản đồ
-//     Map<String, dynamic> data = json.decode(response.body);
-//
-//     // Chuyển đổi bản đồ JSON thành đối tượng Category
-//     Category category = Category.fromJson(data);
-//
-//     // Trả về danh sách các Result từ Category
-//     return category.result ?? [];
-//
-//   } else {
-//     debugPrint('Failed to load categories: ${response.statusCode}');
-//     throw Exception('Failed to load Categories');
-//   }
-// }
-
 //Get Category
 Future<List<Result>> fetchCategories() async {
   final response = await http.get(Uri.parse('http://10.0.2.2:5117/api/Category'));
@@ -78,4 +83,14 @@ Future<List<Result>> fetchCategories() async {
     debugPrint('Failed to load categories: ${response.statusCode}');
     throw Exception('Failed to load Categories');
   }
+}
+
+Future<int?> getUserId() async {
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  String? userJson = prefs.getString('user');
+  if (userJson != null) {
+    Map<String, dynamic> user = jsonDecode(userJson);
+    return user['id'];
+  }
+  return null;
 }
