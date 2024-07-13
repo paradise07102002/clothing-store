@@ -1,0 +1,33 @@
+{
+  "language": "Language",
+  "logout": "Logout",
+  "resetPassword": "Change password",
+  "editProfile": "Edit profile",
+  "darkMode": "Dark mode",
+  "account": "Account",
+  "profile": "Profile",
+  "regional": "Regional",
+  "cart": "Cart",
+  "login": "Login",
+  "username": "Username",
+  "enterUsername": "Enter Username",
+  "password": "Password",
+  "enterPassword": "Enter Password",
+  "registerNow": "Register now",
+  "noAccount": "Do not have an account?",
+  "selectLanguage": "Select Language",
+  "payNow": "PAY NOW",
+  "totalMoney": "Total money",
+  "notification": "Notification",
+  "close": "Close",
+  "xxx": "You need to log in to access your account",
+  "home": "Home",
+  "favorite": "Favorite",
+  "cart": "Cart",
+  "fashionShop": "Fashion Shop",
+  "newProduct": "New Product",
+  "productDetail": "Product detail",
+  "register": "Register"
+
+}
+
