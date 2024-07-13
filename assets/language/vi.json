@@ -1,0 +1,33 @@
+{
+  "language": "Ngôn ngữ",
+  "logout": "Đăng xuất",
+  "resetPassword": "Thay đổi mật khẩu",
+  "editProfile": "Chỉnh sửa thông tin",
+  "darkMode": "Chế độ tối",
+  "account": "Tài khoản",
+  "profile": "Hồ sơ",
+  "regional": "Khu vực",
+  "cart": "Giỏ hàng",
+  "login": "Đăng nhập",
+  "username": "Tên đăng nhập",
+  "enterUsername": "Nhập tên đăng nhập",
+  "password": "Mật khẩu",
+  "enterPassword": "Nhập mật khẩu",
+  "registerNow": "Đăng ký ngay",
+  "noAccount": "Bạn chưa có tài khoản?",
+  "selectLanguage": "Chọn ngôn ngữ",
+  "payNow": "THANH TOÁN",
+  "totalMoney": "Tổng tiền",
+  "notification": "Thông báo",
+  "close": "Đóng",
+  "xxx": "Bạn cần đăng nhập để truy cập vào tài khoản",
+  "home": "Trang chủ",
+  "favorite": "Yêu thích",
+  "cart": "Giỏ hàng",
+  "fashionShop": "Cửa hàng thời trang",
+  "newProduct": "Sản phẩm mới nhất",
+  "productDetail": "Chi tiết sản phẩm",
+  "register": "Đăng ký"
+
+
+}

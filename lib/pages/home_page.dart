@@ -1,7 +1,10 @@
-import 'package:clothing_store/model/category.dart';
+import 'package:clothing_store/model/category.dart' as CategoryModel;
 import 'package:flutter/material.dart';
 import 'package:clothing_store/pages/detail_product.dart';
 import 'package:clothing_store/api/api_service.dart';
+import 'package:clothing_store/model/getAllProduct.dart' as GetAllProductModel;
+
+import '../provider/app_localizations.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -12,50 +15,6 @@ class HomePage extends StatefulWidget {
 
 class _HomePage extends State<HomePage>
 {
-  List<Product> products = [
-    Product(
-      id: "1",
-      imageURL: "assets/products/product1.png",
-      name: "Sản phẩm 11111111111111111111111111111111111111111111111111111111111",
-      price: "500.000.000 đ",
-    ),
-    Product(
-      id: "2",
-      imageURL: "assets/products/product2.png",
-      name: "Sản phẩm 2",
-      price: "100.000 đ",
-    ),
-    Product(
-      id: "3",
-      imageURL: "assets/products/product3.png",
-      name: "Sản phẩm 3",
-      price: "100.000 đ",
-    ),
-    Product(
-      id: "4",
-      imageURL: "assets/products/product4.png",
-      name: "Sản phẩm 4",
-      price: "100.000 đ",
-    ),
-    Product(
-      id: "5",
-      imageURL: "assets/products/product5.png",
-      name: "Sản phẩm 5",
-      price: "100.000 đ",
-    ),
-    Product(
-      id: "6",
-      imageURL: "assets/products/product6.png",
-      name: "Sản phẩm 6",
-      price: "100.000 đ",
-    ),
-    Product(
-      id: "7",
-      imageURL: "assets/products/product7.png",
-      name: "Sản phẩm 7",
-      price: "100.000 đ",
-    )
-  ];
   @override
   Widget build(BuildContext context)
   {
@@ -78,11 +37,11 @@ class _HomePage extends State<HomePage>
                     Align(
                       alignment: Alignment.bottomCenter,
                       child: Padding(
-                        padding: const EdgeInsets.only(top: 20.0),
+                        padding: EdgeInsets.only(top: 20.0),
                         child: AppBar(
-                          title: const Align(
+                          title: Align(
                             alignment: Alignment.center,
-                            child: Text('Fashion shops', style: TextStyle(color: Colors.white, fontSize: 24.0, fontWeight: FontWeight.bold),),
+                            child: Text(AppLocalizations.of(context)?.translate('fashionShop') ?? '', style: TextStyle(color: Colors.white, fontSize: 24.0, fontWeight: FontWeight.bold),),
                           ),
                           backgroundColor: Colors.transparent,
                         ),
@@ -120,9 +79,7 @@ class _HomePage extends State<HomePage>
           ),
           Column(
             children: [
-              ProductListWidget(title: 'Sản phẩm bán chạy', products: products),
-              ProductListWidget(title: 'Sản phẩm mới nhất', products: products),
-              ProductListWidget(title: 'Sản phẩm khác', products: products),
+              ProductListWidget(title: AppLocalizations.of(context)?.translate('newProduct') ?? ''),
             ],
           ),
         ],
@@ -133,9 +90,9 @@ class _HomePage extends State<HomePage>
 
 //UI FOR ITEM PRODUCT
 class ProductItemWidget extends StatefulWidget {
-  const ProductItemWidget({super.key, required this.product});
+  const ProductItemWidget({super.key, required this.getAllProduct});
 
-  final Product product;
+  final GetAllProductModel.Result getAllProduct;
 
   @override
   State<ProductItemWidget> createState() => _ProductItemWidget();
@@ -153,13 +110,16 @@ class _ProductItemWidget extends State<ProductItemWidget>{
   Widget build(BuildContext context){
     return GestureDetector(
       onTap: () {
-        Navigator.push(context, MaterialPageRoute(builder: (context) => const DetailProductPage()));
-        // Navigator.push(context, MaterialPageRoute(builder: (context) => RegisterPage()));
+        Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => DetailProductPage(productId: widget.getAllProduct.id ?? 0))
+        );
       },
       child: Container(
         // width: 128.0,
         // height: 128.0,
         decoration: BoxDecoration(
+          color: Colors.white,
           borderRadius: const BorderRadius.all(Radius.circular(15.0)),
           border: Border.all(color: Colors.black, width: 1.0),
         ),
@@ -178,9 +138,9 @@ class _ProductItemWidget extends State<ProductItemWidget>{
                   ),
                 ],
               ),
-              Image.asset(widget.product.imageURL, width: 64.0, height: 64.0,),
-              Expanded(child: Text(widget.product.name, style: const TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold), overflow: TextOverflow.ellipsis,),),
-              Expanded(child: Text(widget.product.price, style: const TextStyle(fontSize: 12.0, color: Colors.red), overflow: TextOverflow.ellipsis,),)
+              Image.network(widget.getAllProduct.thumbnail ?? '', width: 64.0, height: 64.0,),
+              Expanded(child: Text(widget.getAllProduct.name ?? '', style: const TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold, color: Colors.black), overflow: TextOverflow.ellipsis,),),
+              Expanded(child: Text(widget.getAllProduct.price.toString() ?? '', style: const TextStyle(fontSize: 12.0, color: Colors.red), overflow: TextOverflow.ellipsis,),)
             ],
           ),
       ),
@@ -196,7 +156,7 @@ class CategoryWidget extends StatefulWidget {
   State<CategoryWidget> createState() => _CategoryWidget();
 }
 class _CategoryWidget extends State<CategoryWidget> {
-  late Future<List<Result>> futureCategories;
+  late Future<List<CategoryModel.Result>> futureCategories;
 
   @override
   void initState() {
@@ -205,7 +165,7 @@ class _CategoryWidget extends State<CategoryWidget> {
   }
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<List<Result>>(
+    return FutureBuilder<List<CategoryModel.Result>>(
       future: futureCategories,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
@@ -228,7 +188,7 @@ class _CategoryWidget extends State<CategoryWidget> {
             ),
             itemCount: snapshot.data!.length,
             itemBuilder: (context, index) {{
-              Result category = snapshot.data![index];
+              CategoryModel.Result category = snapshot.data![index];
               return Column(
                 children: [
                   Container(
@@ -244,8 +204,9 @@ class _CategoryWidget extends State<CategoryWidget> {
                       color: Colors.white,
                     ),
                     child: ClipOval(
-                      child: Image.network(category.thumbnail ?? 'https://tse3.mm.bing.net/th?id=OIP.YEvB14OZEQZ2oALiFkJj-wHaE8&pid=Api&P=0&h=180', fit: BoxFit.contain),
+                      child: Image.network(category.thumbnail ?? 'https://tse3.mm.bing.net/th?id=OIP.YEvB14OZEQZ2oALiFkJj-wHaE8&pid=Api&P=0&h=180', width: 64.0, height: 64.0, fit: BoxFit.contain),
                     ),
+                    // child: Image.network(category.thumbnail ?? 'https://tse3.mm.bing.net/th?id=OIP.YEvB14OZEQZ2oALiFkJj-wHaE8&pid=Api&P=0&h=180'),
                   ),
                   Expanded(child: Text(category.name ?? 'Error', style: const TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold), overflow: TextOverflow.ellipsis,),)
                 ],
@@ -259,51 +220,69 @@ class _CategoryWidget extends State<CategoryWidget> {
 }
 //UI FOR LIST PRODUCT
 class ProductListWidget extends StatefulWidget {
-  const ProductListWidget({super.key, required this.title, required this.products,});
+  const ProductListWidget({super.key, required this.title});
 
   final String title;
-  final List<Product> products;
-
   @override
   State<ProductListWidget> createState() => _ProductListWidget();
 }
 class _ProductListWidget extends State<ProductListWidget>{
+  late Future<List<GetAllProductModel.Result>> futureGetAllProduct;
+
+  bool _isFavorite = false;
+
+  void _tonggleFavorite() {
+    setState(() {
+      _isFavorite = !_isFavorite;
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    futureGetAllProduct = getAllProduct();
+  }
   @override
   Widget build(BuildContext context){
-    return Container(
-      margin: const EdgeInsets.only(left: 15.0, top: 30.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(widget.title, style: const TextStyle(fontSize: 24.0, fontWeight: FontWeight.bold),),
-          const SizedBox(height: 5.0,),
-          SizedBox(
-            height: 180.0,
-            width: double.infinity,
-            child: GridView.builder(
-              scrollDirection: Axis.horizontal,
-              itemCount: widget.products.length,
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 1,
-                mainAxisSpacing: 25.0
+    return FutureBuilder<List<GetAllProductModel.Result>>(
+        future: futureGetAllProduct,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasError) {
+            return Center(child: Text('Snapshot Error: ${snapshot.error}'));
+          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+            debugPrint('No Product found');
+            return Center(child: Text('No Product fount'));
+          } else {
+            return Container(
+              margin: const EdgeInsets.only(left: 15.0, top: 30.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(widget.title, style: const TextStyle(fontSize: 24.0, fontWeight: FontWeight.bold),),
+                  const SizedBox(height: 5.0,),
+                  SizedBox(
+                    height: 180.0,
+                    width: double.infinity,
+                    child: GridView.builder(
+                      scrollDirection: Axis.horizontal,
+                      itemCount: snapshot.data!.length,
+                      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 1,
+                          mainAxisSpacing: 25.0
+                      ),
+                      itemBuilder: (context, index) {
+                        GetAllProductModel.Result getAllProduct = snapshot.data![index];
+                        return ProductItemWidget(getAllProduct: getAllProduct);
+                      },
+                    ),
+                  )
+                ],
               ),
-              itemBuilder: (context, index) {
-                final product = widget.products[index];
-                return ProductItemWidget(product: product);
-              },
-            ),
-          )
-        ],
-      ),
+            );
+          }
+        }
     );
   }
-}
-
-class Product {
-  final String id;
-  final String imageURL;
-  final String name;
-  final String price;
-
-  Product({required this.id, required this. imageURL, required this.name, required this.price});
 }

@@ -1,14 +1,19 @@
 import 'dart:convert';
 
+import 'package:clothing_store/pages/home_page.dart';
+import 'package:clothing_store/provider/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:clothing_store/view/widget_switch.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'home_page.dart';
-import 'login_page.dart';
 import 'package:clothing_store/api/api_service.dart';
-import 'package:clothing_store/main.dart';
 import 'package:http/http.dart' as http;
 import 'package:clothing_store/testdiglog.dart';
+import 'package:clothing_store/pages/cart_page.dart';
+import 'package:clothing_store/main.dart';
+
+import '../provider/language_provider.dart';
+
 
 class AccountPage extends StatefulWidget {
   const AccountPage({super.key});
@@ -20,6 +25,37 @@ class _AccountPage extends State<AccountPage> {
   bool isLoggedIn = false;
   late String userName = '';
   String fullname = 'FullName';
+  // int userId = 0;
+
+  void _showLanguageDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(AppLocalizations.of(context)?.translate('payNow') ?? ''),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              ListTile(
+                title: Text('English'),
+                onTap: () {
+                  context.read<LanguageProvider>().changeLanguage('en');
+                  Navigator.of(context).pop();
+                },
+              ),
+              ListTile(
+                title: Text('Tiếng Việt'),
+                onTap: () {
+                  context.read<LanguageProvider>().changeLanguage('vi');
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
 
   @override
   void initState() {
@@ -44,11 +80,17 @@ class _AccountPage extends State<AccountPage> {
   // Logout action
   void _logout() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    SharedPreferences isLogin = await SharedPreferences.getInstance();
+    await isLogin.setBool('isLogin', false);
     await prefs.remove('token');
     await prefs.remove('user');
-    setState(() {
-      isLoggedIn = false;
+    await prefs.remove('userId');
+    setState(() async {
+      isLoggedIn = isLogin.getBool('isLogin') ?? false;
+
       userName = '';// Update login state after logout
+      checkLoginStatus();
     });
   }
   // Show logout confirmation dialog
@@ -96,6 +138,7 @@ class _AccountPage extends State<AccountPage> {
     }
     return {};
   }
+
   Future<void> _loadUserInfo() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? userJson = prefs.getString('user');
@@ -125,11 +168,12 @@ class _AccountPage extends State<AccountPage> {
     return Column(
       children: [
         const SizedBox(height: 45.0),
-        const Row(
+        Row(
           children: [
             SizedBox(width: 15.0),
-            Text('Account',
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24.0, color: Colors.black))
+            Expanded(
+                child: Text(AppLocalizations.of(context)?.translate('account') ?? '',
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24.0), overflow: TextOverflow.ellipsis,))
           ],
         ),
         const SizedBox(height: 15.0),
@@ -137,8 +181,8 @@ class _AccountPage extends State<AccountPage> {
           margin: const EdgeInsets.only(left: 10.0, right: 10.0),
           padding: const EdgeInsets.all(5.0),
           decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(15.0),
-              color: const Color(0xFFF9EAEA)
+              borderRadius: BorderRadius.circular(10.0),
+              // color: const Color(0xFFF9EAEA)
           ),
           child: Row(
             children: [
@@ -160,10 +204,9 @@ class _AccountPage extends State<AccountPage> {
                 ),
               ),
               const SizedBox(width: 7.0),
-              Expanded(child: Text(userName, style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold), overflow: TextOverflow.ellipsis,)),
+              Expanded(child: Text(fullname, style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold), overflow: TextOverflow.ellipsis,)),
               const Icon(
                 Icons.edit,
-                color: Colors.black,
                 size: 32.0,
               )
             ],
@@ -173,10 +216,6 @@ class _AccountPage extends State<AccountPage> {
         Container(
           margin: const EdgeInsets.only(left: 10.0, right: 10.0),
           padding: const EdgeInsets.all(5.0),
-          // decoration: BoxDecoration(
-          //     borderRadius: BorderRadius.circular(15.0),
-          //     color: Color(0xFFF9EAEA)
-          // ),
           child: Row(
             children: [
               const SizedBox(width: 15.0),
@@ -197,7 +236,7 @@ class _AccountPage extends State<AccountPage> {
                 ),
               ),
               const SizedBox(width: 7.0),
-              const Expanded(child: Text('Dark mode', style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold), overflow: TextOverflow.ellipsis,)),
+              Expanded(child: Text(AppLocalizations.of(context)?.translate('darkMode') ?? '', style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold), overflow: TextOverflow.ellipsis,)),
               SwitchScreen(),
             ],
           ),
@@ -206,17 +245,13 @@ class _AccountPage extends State<AccountPage> {
         Row(
           children: [
             SizedBox(width: 35.0),
-            Expanded(child: Text('Profile', style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),)),
+            Expanded(child: Text(AppLocalizations.of(context)?.translate('profile') ?? '', style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),)),
           ],
         ),
         SizedBox(height: 15.0),
         Container(
           margin: const EdgeInsets.only(left: 10.0, right: 10.0),
           padding: const EdgeInsets.all(5.0),
-          // decoration: BoxDecoration(
-          //     borderRadius: BorderRadius.circular(15.0),
-          //     color: const Color(0xFFF9EAEA)
-          // ),
           child: Row(
             children: [
               const SizedBox(width: 15.0),
@@ -237,10 +272,9 @@ class _AccountPage extends State<AccountPage> {
                 ),
               ),
               const SizedBox(width: 7.0),
-              const Expanded(child: Text('Edit profile', style: TextStyle(fontSize: 18.0), overflow: TextOverflow.ellipsis,)),
+              Expanded(child: Text(AppLocalizations.of(context)?.translate('editProfile') ?? '', style: TextStyle(fontSize: 18.0), overflow: TextOverflow.ellipsis,)),
               const Icon(
                 Icons.chevron_right,
-                color: Colors.black,
                 size: 48.0,
               )
             ],
@@ -251,10 +285,6 @@ class _AccountPage extends State<AccountPage> {
         Container(
           margin: const EdgeInsets.only(left: 10.0, right: 10.0),
           padding: const EdgeInsets.all(5.0),
-          // decoration: BoxDecoration(
-          //     borderRadius: BorderRadius.circular(15.0),
-          //     color: const Color(0xFFF9EAEA)
-          // ),
           child: Row(
             children: [
               const SizedBox(width: 15.0),
@@ -275,10 +305,9 @@ class _AccountPage extends State<AccountPage> {
                 ),
               ),
               const SizedBox(width: 7.0),
-              const Expanded(child: Text('Change password', style: TextStyle(fontSize: 18.0), overflow: TextOverflow.ellipsis,)),
+              Expanded(child: Text(AppLocalizations.of(context)?.translate('resetPassword') ?? '', style: TextStyle(fontSize: 18.0), overflow: TextOverflow.ellipsis,)),
               const Icon(
                 Icons.chevron_right,
-                color: Colors.black,
                 size: 48.0,
               )
             ],
@@ -288,7 +317,7 @@ class _AccountPage extends State<AccountPage> {
         Row(
           children: [
             SizedBox(width: 35.0),
-            Expanded(child: Text('Regional', style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),)),
+            Expanded(child: Text(AppLocalizations.of(context)?.translate('regional') ?? '', style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),)),
           ],
         ),
         SizedBox(height: 10.0),
@@ -299,43 +328,51 @@ class _AccountPage extends State<AccountPage> {
           //     borderRadius: BorderRadius.circular(15.0),
           //     color: const Color(0xFFF9EAEA)
           // ),
-          child: Row(
-            children: [
-              const SizedBox(width: 15.0),
-              Container(
-                width: 64.0,
-                height: 64.0,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(55.0),
-                  border: Border.all(
-                      color: Colors.black,
-                      width: 1.0
+          child: GestureDetector(
+            onTap: () {
+              //kkk
+              _showLanguageDialog();
+            },
+            child: Row(
+              children: [
+                const SizedBox(width: 15.0),
+                Container(
+                  width: 64.0,
+                  height: 64.0,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(55.0),
+                    border: Border.all(
+                        color: Colors.black,
+                        width: 1.0
+                    ),
+                  ),
+                  child: ClipOval(
+                    child: Image.asset(
+                      'assets/language.png',
+                      fit: BoxFit.contain,),
                   ),
                 ),
-                child: ClipOval(
-                  child: Image.asset(
-                    'assets/language.png',
-                    fit: BoxFit.contain,),
+                const SizedBox(width: 7.0),
+                Expanded(
+                  child: Text(
+                    AppLocalizations.of(context)?.translate('language') ?? '',
+                    style: TextStyle(fontSize: 18.0),
+                    overflow: TextOverflow.ellipsis,
+                  ),
                 ),
-              ),
-              const SizedBox(width: 7.0),
-              const Expanded(child: Text('Languge', style: TextStyle(fontSize: 18.0), overflow: TextOverflow.ellipsis,)),
-              const Icon(
-                Icons.chevron_right,
-                color: Colors.black,
-                size: 48.0,
-              )
-            ],
+                // Expanded(child: Text(AppLocalizations.of(context).translate('language'), style: TextStyle(fontSize: 18.0), overflow: TextOverflow.ellipsis,)),
+                const Icon(
+                  Icons.chevron_right,
+                  size: 48.0,
+                )
+              ],
+            ),
           ),
         ),
         SizedBox(height: 10.0),
         Container(
           margin: const EdgeInsets.only(left: 10.0, right: 10.0),
           padding: const EdgeInsets.all(5.0),
-          // decoration: BoxDecoration(
-          //     borderRadius: BorderRadius.circular(15.0),
-          //     color: const Color(0xFFF9EAEA)
-          // ),
           child: GestureDetector(
             onTap: () {
               _showLogoutDialog();
@@ -360,10 +397,9 @@ class _AccountPage extends State<AccountPage> {
                   ),
                 ),
                 const SizedBox(width: 7.0),
-                const Expanded(child: Text('Logout', style: TextStyle(fontSize: 18.0), overflow: TextOverflow.ellipsis,)),
+                Expanded(child: Text(AppLocalizations.of(context)?.translate('logout') ?? '', style: TextStyle(fontSize: 18.0), overflow: TextOverflow.ellipsis,)),
                 const Icon(
                   Icons.chevron_right,
-                  color: Colors.black,
                   size: 48.0,
                 )
               ],
@@ -379,37 +415,11 @@ class _AccountPage extends State<AccountPage> {
     String _lablePassword = 'Nhập mật khẩu';
 
 
-    Color _lbColorUser = Colors.black;
-    Color _lbColorPassword = Colors.black;
 
 
     final TextEditingController _userNameController = TextEditingController();
     final TextEditingController _passwordController = TextEditingController();
 
-    Future<void> _login() async {
-      final String username = _userNameController.text;
-      final String password = _passwordController.text;
-
-      try {
-        await loginUser(username, password);
-        ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Đăng nhập ok'))
-        );
-        setState(() {
-          isLoggedIn = true;
-          userName = '';// Update login state after logout
-        });
-        // //Navigator.pop(context);
-        // Navigator.pushReplacement(
-        //   context,
-        //   MaterialPageRoute(builder: (context) => AccountPage()),
-        // );
-      } catch(e) {
-        ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Đăng nhập thất bại: $e'))
-        );
-      }
-    }
     return Column(
       children: [
         const SizedBox(height: 35.0,),
@@ -417,7 +427,7 @@ class _AccountPage extends State<AccountPage> {
           children: [
             Container(
               margin: const EdgeInsets.only(left: 15.0, top: 15.0),
-              child: const Text('Login', style: TextStyle(fontSize: 32.0, fontWeight: FontWeight.bold, color: Colors.black),),
+              child: Text(AppLocalizations.of(context)?.translate('login') ?? '', style: TextStyle(fontSize: 32.0, fontWeight: FontWeight.bold,),),
             )
           ],
         ),
@@ -426,23 +436,23 @@ class _AccountPage extends State<AccountPage> {
           children: [
             Container(
               margin: const EdgeInsets.only(left: 15.0),
-              child: const Text('Tên đăng nhập', style: TextStyle(fontSize: 18.0, color: Colors.black),),
+              child: Text(AppLocalizations.of(context)?.translate('username') ?? '', style: TextStyle(fontSize: 18.0,),),
             )
           ],
         ),
         const SizedBox(height: 5.0),
-        FieldInput(textEditingController: _userNameController, title: _lableUsername, lableColor: _lbColorUser,),
+        FieldInput(textEditingController: _userNameController, title: AppLocalizations.of(context)?.translate('enterUsername') ?? '',),
         const SizedBox(height: 15.0),
         Row(
           children: [
             Container(
               margin: const EdgeInsets.only(left: 15.0),
-              child: const Text('Mật khẩu', style: TextStyle(fontSize: 18.0, color: Colors.black),),
+              child: Text(AppLocalizations.of(context)?.translate('password') ?? '', style: TextStyle(fontSize: 18.0,),),
             )
           ],
         ),
         const SizedBox(height: 5.0),
-        FieldInputPass(textEditingController: _passwordController, title: _lablePassword, lableColor: _lbColorPassword,),
+        FieldInputPass(textEditingController: _passwordController, title: AppLocalizations.of(context)?.translate('enterPassword') ?? '', ),
         SizedBox(height: 25),
         Row(
           children: [
@@ -455,28 +465,36 @@ class _AccountPage extends State<AccountPage> {
                   // _login();
                   final String apiUrl = 'http://10.0.2.2:5117/api/User/login';
 
+                  final response = await http.post(
+                    Uri.parse(apiUrl),
+                    headers: <String, String>{
+                      'Content-Type': 'application/json; charset=UTF-8',
+                    },
+                    body: jsonEncode(<String, String>{
+                      'username': _userNameController.text,
+                      'password': _passwordController.text,
+                    }),
+                  );
                   try {
-                    final response = await http.post(
-                      Uri.parse(apiUrl),
-                      headers: <String, String>{
-                        'Content-Type': 'application/json; charset=UTF-8',
-                      },
-                      body: jsonEncode(<String, String>{
-                        'username': _userNameController.text,
-                        'password': _passwordController.text,
-                      }),
-                    );
                     if(response.statusCode == 200) {
                       final Map<String, dynamic> responseData =jsonDecode(response.body);
                       final String token = responseData['result']['token'];
                       final Map<String, dynamic> user = responseData['result']['user'];
 
+                      int idUser = responseData['result']['user']['id'];
+
                       SharedPreferences prefs = await SharedPreferences.getInstance();
                       await prefs.setString('token', token);
                       await prefs.setString('user', jsonEncode(user));
+                      await prefs.setInt('userId', idUser);
+
+                      SharedPreferences isLogin = await SharedPreferences.getInstance();
+                      isLogin.setBool('isLogin', true);
+
 
                       setState(() {
-                        isLoggedIn = true;
+                        isLoggedIn = isLogin.getBool('isLogin') ?? false;
+                        idNguoiDung = prefs.getInt('userId') ?? 0;
                       });
 
                       print("Login successful");
@@ -486,7 +504,7 @@ class _AccountPage extends State<AccountPage> {
                       throw Exception('Failed to login');
                     }
                   } catch(e) {
-                    print('Error: $e');
+                    debugPrint('hghg: ${response.body}');
                     throw Exception('Failed to login');
                   }
                 },
@@ -497,7 +515,7 @@ class _AccountPage extends State<AccountPage> {
                       borderRadius: BorderRadius.circular(5.0)
                   ),
                 ),
-                child: const Text('Đăng nhập', style: TextStyle(color: Colors.white, fontSize: 16.0, fontWeight: FontWeight.bold),),
+                child: Text(AppLocalizations.of(context)?.translate('login') ?? '', style: TextStyle(color: Colors.white, fontSize: 16.0, fontWeight: FontWeight.bold),),
               ),
             ),
           ],
@@ -506,7 +524,7 @@ class _AccountPage extends State<AccountPage> {
         Row(
           children: [
             SizedBox(width: 35.0),
-            Text('Bạn chưa có tài khoản', style: TextStyle(fontSize: 20.0, color: Colors.blue),),
+            Text(AppLocalizations.of(context)?.translate('noAccount') ?? '', style: TextStyle(fontSize: 20.0, color: Colors.blue),),
             SizedBox(
               child: TextButton(
                 onPressed: () {
@@ -515,7 +533,7 @@ class _AccountPage extends State<AccountPage> {
                 // style: TextButton.styleFrom(
                 //   textStyle: TextStyle(fontSize: 28.0)
                 // ),
-                child: Text('Đăng ký ngay', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.red, fontSize: 20.0),),
+                child: Text(AppLocalizations.of(context)?.translate('registerNow') ?? '', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.red, fontSize: 20.0),),
               ),
             )
           ],
@@ -550,10 +568,10 @@ class _ToggleSwitchState extends State<ToggleSwitch> {
 
 
 class FieldInput extends StatefulWidget {
-  const FieldInput({super.key, required this.textEditingController, required this.title, required this.lableColor});
+  const FieldInput({super.key, required this.textEditingController, required this.title});
   final TextEditingController textEditingController;
   final String title;
-  final Color lableColor;
+  // final Color lableColor;
   @override
   State<FieldInput> createState() => _FieldInput();
 }
@@ -575,7 +593,7 @@ class _FieldInput extends State<FieldInput> {
                 contentPadding: const EdgeInsets.symmetric(vertical: 20.0, horizontal: 15.0), // Set content padding
                 prefixIcon: Icon(Icons.people),
                 labelText: widget.title,
-                labelStyle: TextStyle(color: widget.lableColor)// Set hint text
+                labelStyle: TextStyle(color: Colors.red)// Set hint text
             ),
             style: const TextStyle(fontSize: 16.0), // Set text style
           ),
@@ -585,10 +603,10 @@ class _FieldInput extends State<FieldInput> {
   }
 }
 class FieldInputPass extends StatefulWidget {
-  const FieldInputPass({super.key, required this.textEditingController, required this.title, required this.lableColor});
+  const FieldInputPass({super.key, required this.textEditingController, required this.title,});
   final TextEditingController textEditingController;
   final String title;
-  final Color lableColor;
+  // final Color lableColor;
   @override
   State<FieldInputPass> createState() => _FieldInputPass();
 }
@@ -610,7 +628,7 @@ class _FieldInputPass extends State<FieldInputPass> {
               contentPadding: const EdgeInsets.symmetric(vertical: 20.0, horizontal: 15.0), // Set content padding
               prefixIcon: Icon(Icons.lock),
               labelText: widget.title,
-              labelStyle: TextStyle(color: widget.lableColor),
+              labelStyle: TextStyle(color: Colors.red),
             ),
             style: const TextStyle(fontSize: 16.0), // Set
             obscureText: true,// text style
