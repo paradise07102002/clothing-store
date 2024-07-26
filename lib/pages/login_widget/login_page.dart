@@ -1,7 +1,7 @@
 import 'package:clothing_store/pages/home_page.dart';
 import 'package:flutter/material.dart';
 import 'package:clothing_store/api/api_service.dart';
-import 'account_page.dart';
+import '../account_widget/account_page.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
