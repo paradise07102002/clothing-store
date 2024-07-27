@@ -1,6 +1,8 @@
+import 'package:clothing_store/main.dart';
 import 'package:flutter/material.dart';
 
 import '../provider/app_localizations.dart';
+import 'favorite_widget.dart';
 
 class FavoritePage extends StatefulWidget {
   const FavoritePage({super.key});
@@ -29,6 +31,7 @@ class _FavoritePage extends State<FavoritePage>
           width: 500.0,
           height: 2.0,
           color: Colors.black,
+          // child: FavoriteProductList(userId: idNguoiDung ?? 0,),
         )
       ],
     );

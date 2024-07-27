@@ -1,3 +1,4 @@
+import 'package:clothing_store/main.dart';
 import 'package:clothing_store/model/category.dart' as CategoryModel;
 import 'package:flutter/material.dart';
 import 'package:clothing_store/pages/detail_product.dart';
@@ -79,7 +80,7 @@ class _HomePage extends State<HomePage>
           ),
           Column(
             children: [
-              ProductListWidget(title: AppLocalizations.of(context)?.translate('newProduct') ?? ''),
+              ProductListWidget(title: AppLocalizations.of(context)?.translate('newProduct') ?? '', userId: idNguoiDung ?? 0,),
             ],
           ),
         ],
@@ -90,59 +91,86 @@ class _HomePage extends State<HomePage>
 
 //UI FOR ITEM PRODUCT
 class ProductItemWidget extends StatefulWidget {
-  const ProductItemWidget({super.key, required this.getAllProduct});
+  const ProductItemWidget({super.key, required this.getAllProduct, required this.userId});
 
   final GetAllProductModel.Result getAllProduct;
+  final int userId;
 
   @override
   State<ProductItemWidget> createState() => _ProductItemWidget();
 }
-class _ProductItemWidget extends State<ProductItemWidget>{
+
+class _ProductItemWidget extends State<ProductItemWidget> {
   bool _isFavorite = false;
 
-  void _tonggleFavorite() {
-    setState(() {
-      _isFavorite = !_isFavorite;
-    });
+  void _toggleFavorite() async {
+    try {
+      final result = await addWishlistItem(widget.userId, widget.getAllProduct.id!);
+      if (result.statusCode == 200) {
+        setState(() {
+          _isFavorite = !_isFavorite;
+        });
+      } else {
+        // Handle error
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to add to wishlist')),
+        );
+      }
+    } catch (e) {
+      // Handle error
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error: $e')),
+      );
+    }
   }
 
   @override
-  Widget build(BuildContext context){
+  Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
         Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => DetailProductPage(productId: widget.getAllProduct.id ?? 0))
+          context,
+          MaterialPageRoute(builder: (context) => DetailProductPage(productId: widget.getAllProduct.id ?? 0)),
         );
       },
       child: Container(
-        // width: 128.0,
-        // height: 128.0,
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: const BorderRadius.all(Radius.circular(15.0)),
           border: Border.all(color: Colors.black, width: 1.0),
         ),
-          child: Column(
-            children: [
-              Row(
-                children: [
-                  const SizedBox(width: 125.0,),
-                  IconButton(
-                    icon: Icon(
-                      _isFavorite ? Icons.favorite : Icons.favorite_border,
-                      color: _isFavorite ? Colors.red : Colors.grey,
-                    ),
-                    onPressed: _tonggleFavorite,
-                    iconSize: 32.0,
+        child: Column(
+          children: [
+            Row(
+              children: [
+                const SizedBox(width: 125.0),
+                IconButton(
+                  icon: Icon(
+                    _isFavorite ? Icons.favorite : Icons.favorite_border,
+                    color: _isFavorite ? Colors.red : Colors.grey,
                   ),
-                ],
+                  onPressed: _toggleFavorite,
+                  iconSize: 32.0,
+                ),
+              ],
+            ),
+            Image.network(widget.getAllProduct.thumbnail ?? '', width: 64.0, height: 64.0),
+            Expanded(
+              child: Text(
+                widget.getAllProduct.name ?? '',
+                style: const TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold, color: Colors.black),
+                overflow: TextOverflow.ellipsis,
               ),
-              Image.network(widget.getAllProduct.thumbnail ?? '', width: 64.0, height: 64.0,),
-              Expanded(child: Text(widget.getAllProduct.name ?? '', style: const TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold, color: Colors.black), overflow: TextOverflow.ellipsis,),),
-              Expanded(child: Text(widget.getAllProduct.price.toString() ?? '', style: const TextStyle(fontSize: 12.0, color: Colors.red), overflow: TextOverflow.ellipsis,),)
-            ],
-          ),
+            ),
+            Expanded(
+              child: Text(
+                widget.getAllProduct.price.toString(),
+                style: const TextStyle(fontSize: 12.0, color: Colors.red),
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -220,69 +248,66 @@ class _CategoryWidget extends State<CategoryWidget> {
 }
 //UI FOR LIST PRODUCT
 class ProductListWidget extends StatefulWidget {
-  const ProductListWidget({super.key, required this.title});
+  const ProductListWidget({super.key, required this.title, required this.userId});
 
   final String title;
+  final int userId;
+
   @override
   State<ProductListWidget> createState() => _ProductListWidget();
 }
-class _ProductListWidget extends State<ProductListWidget>{
+
+class _ProductListWidget extends State<ProductListWidget> {
   late Future<List<GetAllProductModel.Result>> futureGetAllProduct;
-
-  bool _isFavorite = false;
-
-  void _tonggleFavorite() {
-    setState(() {
-      _isFavorite = !_isFavorite;
-    });
-  }
 
   @override
   void initState() {
     super.initState();
     futureGetAllProduct = getAllProduct();
   }
+
   @override
-  Widget build(BuildContext context){
+  Widget build(BuildContext context) {
     return FutureBuilder<List<GetAllProductModel.Result>>(
-        future: futureGetAllProduct,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
-          } else if (snapshot.hasError) {
-            return Center(child: Text('Snapshot Error: ${snapshot.error}'));
-          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            debugPrint('No Product found');
-            return Center(child: Text('No Product fount'));
-          } else {
-            return Container(
-              margin: const EdgeInsets.only(left: 15.0, top: 30.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(widget.title, style: const TextStyle(fontSize: 24.0, fontWeight: FontWeight.bold),),
-                  const SizedBox(height: 5.0,),
-                  SizedBox(
-                    height: 180.0,
-                    width: double.infinity,
-                    child: GridView.builder(
-                      scrollDirection: Axis.horizontal,
-                      itemCount: snapshot.data!.length,
-                      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 1,
-                          mainAxisSpacing: 25.0
-                      ),
-                      itemBuilder: (context, index) {
-                        GetAllProductModel.Result getAllProduct = snapshot.data![index];
-                        return ProductItemWidget(getAllProduct: getAllProduct);
-                      },
+      future: futureGetAllProduct,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Center(child: CircularProgressIndicator());
+        } else if (snapshot.hasError) {
+          return Center(child: Text('Snapshot Error: ${snapshot.error}'));
+        } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+          debugPrint('No Product found');
+          return Center(child: Text('No Product found'));
+        } else {
+          return Container(
+            margin: const EdgeInsets.only(left: 15.0, top: 30.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(widget.title, style: const TextStyle(fontSize: 24.0, fontWeight: FontWeight.bold)),
+                const SizedBox(height: 5.0),
+                SizedBox(
+                  height: 180.0,
+                  width: double.infinity,
+                  child: GridView.builder(
+                    scrollDirection: Axis.horizontal,
+                    itemCount: snapshot.data!.length,
+                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 1,
+                      mainAxisSpacing: 25.0,
                     ),
-                  )
-                ],
-              ),
-            );
-          }
+                    itemBuilder: (context, index) {
+                      GetAllProductModel.Result getAllProduct = snapshot.data![index];
+                      return ProductItemWidget(getAllProduct: getAllProduct, userId: widget.userId);
+                    },
+                  ),
+                ),
+              ],
+            ),
+          );
         }
+      },
     );
   }
 }
+

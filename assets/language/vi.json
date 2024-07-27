@@ -11,6 +11,9 @@
   "login": "Đăng nhập",
   "username": "Tên đăng nhập",
   "enterUsername": "Nhập tên đăng nhập",
+  "enterFullname": "Nhập họ và tên",
+  "enterEmail": "Nhập Email",
+  "enterPhone": "Nhập số điện thoại",
   "password": "Mật khẩu",
   "enterPassword": "Nhập mật khẩu",
   "registerNow": "Đăng ký ngay",
@@ -27,7 +30,12 @@
   "fashionShop": "Cửa hàng thời trang",
   "newProduct": "Sản phẩm mới nhất",
   "productDetail": "Chi tiết sản phẩm",
-  "register": "Đăng ký"
-
-
+  "register": "Đăng ký",
+  "fullName": "Họ và tên",
+  "phone": "Số điện thoại",
+  "confirmPassword": "Xác nhận mật khẩu",
+  "cancel": "Đóng",
+  "change": "Thay đổi",
+  "changeLanguage": "Thay đổi ngôn ngữ",
+  "historyPurchase": "Lịch sử mua hàng"
 }

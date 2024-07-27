@@ -13,6 +13,11 @@ import 'package:clothing_store/model/cart/putCartItem.dart' as PutCartItemModel;
 import 'package:clothing_store/model/cart/deleteCartItem.dart' as DeleteCartItem;
 import '../model/cart/getCart.dart';
 import 'package:clothing_store/model/payment/getPayment.dart' as GetPaymentModel;
+import '../model/resetPassword.dart';
+import 'package:clothing_store/model/getHistoryOrder.dart';
+import 'package:clothing_store/model/getOrderById.dart';
+import 'package:clothing_store/model/postFavorite.dart';
+import 'package:clothing_store/model/getFavorite.dart';
 
 //Login
 Future<void> loginUser(String username, String password) async {
@@ -47,31 +52,6 @@ Future<void> loginUser(String username, String password) async {
   } catch(e) {
     print('Error: $e');
     throw Exception('Failed to login');
-  }
-}
-//SignUp
-Future<void> registerUser(SignUp signUp) async {
-  final String apiUrl = 'http://10.0.2.2:5117/api/User/signUp';
-
-  try {
-    final response = await http.post(
-      Uri.parse(apiUrl),
-      headers: <String, String>{
-        'Content-Type': 'application/json; charset=UTF-8',
-      },
-      body: jsonEncode(signUp.toJson()),
-    );
-
-    if (response.statusCode == 200) {
-      print("User registered successfully");
-    } else {
-      print('Failed to register user. Status code: ${response.statusCode}');
-      print('Response body: ${response.body}');
-      throw Exception('Failed to register user');
-    }
-  } catch (e) {
-    print('Error: $e');
-    throw Exception('Failed to register user');
   }
 }
 
@@ -330,5 +310,116 @@ Future<GetPaymentModel.GetPayment?> fetchPaymentMethods() async {
     }
   } catch (e) {
     debugPrint('failedd: ${response.statusCode}');
+  }
+}
+
+Future<void> resetPassword(ResetPassword resetPassword) async {
+  // Define your API endpoint URL
+  final String apiUrl = 'http://10.0.2.2:5117/api/User/resetPassword';
+  try {
+    // Make POST request
+    final response = await http.put(
+      Uri.parse(apiUrl),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode(resetPassword.toJson()),
+    );
+
+    if (response.statusCode == 200) {
+      // Handle successful response
+      print('Password reset successfully.');
+    } else {
+      // Handle errors
+      print('Failed to reset password. Status code: ${response.statusCode}');
+      print('Response body: ${response.body}');
+      throw Exception('Failed to reset password');
+    }
+  } catch (e) {
+    // Handle exceptions
+    print('Exception during password reset: $e');
+    rethrow; // Rethrow the exception to propagate it further
+  }
+}
+//SignUp
+Future<void> registerUser(SignUp signUp) async {
+  final String apiUrl = 'http://10.0.2.2:5117/api/User/signUp';
+
+  try {
+    final response = await http.post(
+      Uri.parse(apiUrl),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode(signUp.toJson()),
+    );
+
+    if (response.statusCode == 200) {
+      print("User registered successfully");
+    } else {
+      print('Failed to register user. Status code: ${response.statusCode}');
+      print('Response body: ${response.body}');
+      throw Exception('Failed to register user');
+    }
+  } catch (e) {
+    print('Error: $e');
+    throw Exception('Failed to register user');
+  }
+}
+
+//History order
+Future<GetHistoryOrder> fetchHistoryOrders(int userId) async {
+  final String apiUrl = 'http://10.0.2.2:5117/api/Order/GetAllOrderByUserId/$userId';
+
+  final response = await http.get(Uri.parse(apiUrl));
+  if (response.statusCode == 200) {
+    return GetHistoryOrder.fromJson(json.decode(response.body));
+  }
+  else {
+    debugPrint('eee ${response.statusCode}');
+    throw Exception('Failed');
+  }
+}
+//Order by id
+Future<GetOrderById> fetchOrderById(int orderId) async {
+  final response = await http.get(Uri.parse('http://10.0.2.2:5117/api/Order/getOrderByOrderId?id=$orderId'));
+  if (response.statusCode == 200) {
+    return GetOrderById.fromJson(jsonDecode(response.body));
+  } else {
+    throw Exception('Failed to load order details');
+  }
+}
+
+//Post Favorite
+Future<PostFavorite> addWishlistItem(int userId, int productId) async {
+  final response = await http.post(
+    Uri.parse('http://10.0.2.2:5117/api/Wishlist/addWishlistItem?id=$userId'),
+    headers: <String, String>{
+      'Content-Type': 'application/json; charset=UTF-8',
+    },
+    body: jsonEncode(<String, int>{
+      'productId': productId,
+    }),
+  );
+
+  if (response.statusCode == 200) {
+    return PostFavorite.fromJson(jsonDecode(response.body));
+  } else {
+    throw Exception('Failed to add item to wishlist');
+  }
+}
+//Get favorite
+Future<GetFavorite> getWishlistByUserId(int userId) async {
+  final response = await http.get(
+    Uri.parse('http://10.0.2.2:5117/api/Wishlist/getWishlistByUserId/$userId'),
+    headers: <String, String>{
+      'Content-Type': 'application/json; charset=UTF-8',
+    },
+  );
+
+  if (response.statusCode == 200) {
+    return GetFavorite.fromJson(jsonDecode(response.body));
+  } else {
+    throw Exception('Failed to load wishlist');
   }
 }

@@ -1,18 +1,19 @@
 import 'dart:convert';
 
-import 'package:clothing_store/pages/home_page.dart';
+import 'package:clothing_store/pages/detail_product.dart';
 import 'package:clothing_store/provider/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:clothing_store/view/widget_switch.dart';
 import 'package:provider/provider.dart';
+import 'package:quickalert/models/quickalert_type.dart';
+import 'package:quickalert/widgets/quickalert_dialog.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:clothing_store/api/api_service.dart';
 import 'package:http/http.dart' as http;
 import 'package:clothing_store/testdiglog.dart';
-import 'package:clothing_store/pages/cart_page.dart';
 import 'package:clothing_store/main.dart';
-
 import '../provider/language_provider.dart';
+import 'package:clothing_store/showResetPass.dart';
+import 'package:clothing_store/pages/historyOrder.dart';
 
 
 class AccountPage extends StatefulWidget {
@@ -24,15 +25,19 @@ class AccountPage extends StatefulWidget {
 class _AccountPage extends State<AccountPage> {
   bool isLoggedIn = false;
   late String userName = '';
+  late int userId = 0;
   String fullname = 'FullName';
+  String email = '';
+  String phoneNumber = '';
   // int userId = 0;
+
 
   void _showLanguageDialog() {
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text(AppLocalizations.of(context)?.translate('payNow') ?? ''),
+          title: Text(AppLocalizations.of(context)?.translate('changeLanguage') ?? ''),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
@@ -57,6 +62,37 @@ class _AccountPage extends State<AccountPage> {
     );
   }
 
+  void _showUserInfoDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(AppLocalizations.of(context)?.translate('Infor') ?? ''),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                Text('Username: $userName'),
+                SizedBox(height: 8.0),
+                Text('Full Name: $fullname'),
+                SizedBox(height: 8.0),
+                Text('Email: $email'),
+                SizedBox(height: 8.0),
+                Text('Phone Number: $phoneNumber'),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: Text('Close'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
   @override
   void initState() {
     super.initState();
@@ -128,6 +164,14 @@ class _AccountPage extends State<AccountPage> {
       }
     );
   }
+  void _testdiglog2() {
+    showDialog(
+        context: context,
+        builder: (BuildContext) {
+          return RePassDialog();
+        }
+    );
+  }
 
   Future<Map<String, dynamic>> getUserInfo() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -147,6 +191,9 @@ class _AccountPage extends State<AccountPage> {
       setState(() {
         userName = user['userName'];
         fullname = user['fullName'];
+        userId = user['id'];
+        email = user['email'];
+        phoneNumber = user['phoneNumber'];
       });
     }
   }
@@ -184,32 +231,37 @@ class _AccountPage extends State<AccountPage> {
               borderRadius: BorderRadius.circular(10.0),
               // color: const Color(0xFFF9EAEA)
           ),
-          child: Row(
-            children: [
-              const SizedBox(width: 15.0),
-              Container(
-                width: 96.0,
-                height: 96.0,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(55.0),
-                  border: Border.all(
-                      color: Colors.black,
-                      width: 1.0
+          child: GestureDetector(
+            onTap: () {
+              _showUserInfoDialog();
+            },
+            child: Row(
+              children: [
+                const SizedBox(width: 15.0),
+                Container(
+                  width: 96.0,
+                  height: 96.0,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(55.0),
+                    border: Border.all(
+                        color: Colors.black,
+                        width: 1.0
+                    ),
+                  ),
+                  child: ClipOval(
+                    child: Image.network(
+                      'https://www.vietnamworks.com/hrinsider/wp-content/uploads/2023/12/anh-den-ngau-012.jpg',
+                      fit: BoxFit.contain,),
                   ),
                 ),
-                child: ClipOval(
-                  child: Image.network(
-                    'https://www.vietnamworks.com/hrinsider/wp-content/uploads/2023/12/anh-den-ngau-012.jpg',
-                    fit: BoxFit.contain,),
-                ),
-              ),
-              const SizedBox(width: 7.0),
-              Expanded(child: Text(fullname, style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold), overflow: TextOverflow.ellipsis,)),
-              const Icon(
-                Icons.edit,
-                size: 32.0,
-              )
-            ],
+                const SizedBox(width: 7.0),
+                Expanded(child: Text(fullname, style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold), overflow: TextOverflow.ellipsis,)),
+                const Icon(
+                  Icons.edit,
+                  size: 32.0,
+                )
+              ],
+            ),
           ),
         ),
         const SizedBox(height: 35.0),
@@ -252,32 +304,37 @@ class _AccountPage extends State<AccountPage> {
         Container(
           margin: const EdgeInsets.only(left: 10.0, right: 10.0),
           padding: const EdgeInsets.all(5.0),
-          child: Row(
-            children: [
-              const SizedBox(width: 15.0),
-              Container(
-                width: 64.0,
-                height: 64.0,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(55.0),
-                  border: Border.all(
-                      color: Colors.black,
-                      width: 1.0
+          child: GestureDetector(
+            onTap: () {
+              Navigator.push(context, MaterialPageRoute(builder: (context) => OrderHistoryPage(userId: userId)));
+            },
+            child: Row(
+              children: [
+                const SizedBox(width: 15.0),
+                Container(
+                  width: 64.0,
+                  height: 64.0,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(55.0),
+                    border: Border.all(
+                        color: Colors.black,
+                        width: 1.0
+                    ),
+                  ),
+                  child: ClipOval(
+                    child: Image.asset(
+                      'assets/edit_profile.png',
+                      fit: BoxFit.contain,),
                   ),
                 ),
-                child: ClipOval(
-                  child: Image.asset(
-                    'assets/edit_profile.png',
-                    fit: BoxFit.contain,),
-                ),
-              ),
-              const SizedBox(width: 7.0),
-              Expanded(child: Text(AppLocalizations.of(context)?.translate('editProfile') ?? '', style: TextStyle(fontSize: 18.0), overflow: TextOverflow.ellipsis,)),
-              const Icon(
-                Icons.chevron_right,
-                size: 48.0,
-              )
-            ],
+                const SizedBox(width: 7.0),
+                Expanded(child: Text(AppLocalizations.of(context)?.translate('historyPurchase') ?? '', style: TextStyle(fontSize: 18.0), overflow: TextOverflow.ellipsis,)),
+                const Icon(
+                  Icons.chevron_right,
+                  size: 48.0,
+                )
+              ],
+            ),
           ),
 
         ),
@@ -285,32 +342,38 @@ class _AccountPage extends State<AccountPage> {
         Container(
           margin: const EdgeInsets.only(left: 10.0, right: 10.0),
           padding: const EdgeInsets.all(5.0),
-          child: Row(
-            children: [
-              const SizedBox(width: 15.0),
-              Container(
-                width: 64.0,
-                height: 64.0,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(55.0),
-                  border: Border.all(
-                      color: Colors.black,
-                      width: 1.0
+          child: GestureDetector(
+            onTap: () {
+              _testdiglog2();
+              //lolo
+            },
+              child: Row(
+                children: [
+                  const SizedBox(width: 15.0),
+                  Container(
+                    width: 64.0,
+                    height: 64.0,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(55.0),
+                      border: Border.all(
+                          color: Colors.black,
+                          width: 1.0
+                      ),
+                    ),
+                    child: ClipOval(
+                      child: Image.asset(
+                        'assets/reset_password.png',
+                        fit: BoxFit.contain,),
+                    ),
                   ),
-                ),
-                child: ClipOval(
-                  child: Image.asset(
-                    'assets/reset_password.png',
-                    fit: BoxFit.contain,),
-                ),
+                  const SizedBox(width: 7.0),
+                  Expanded(child: Text(AppLocalizations.of(context)?.translate('resetPassword') ?? '', style: TextStyle(fontSize: 18.0), overflow: TextOverflow.ellipsis,)),
+                  const Icon(
+                    Icons.chevron_right,
+                    size: 48.0,
+                  )
+                ],
               ),
-              const SizedBox(width: 7.0),
-              Expanded(child: Text(AppLocalizations.of(context)?.translate('resetPassword') ?? '', style: TextStyle(fontSize: 18.0), overflow: TextOverflow.ellipsis,)),
-              const Icon(
-                Icons.chevron_right,
-                size: 48.0,
-              )
-            ],
           ),
         ),
         SizedBox(height: 35.0),
@@ -477,6 +540,7 @@ class _AccountPage extends State<AccountPage> {
                   );
                   try {
                     if(response.statusCode == 200) {
+                      QuickAlert.show(context: context, type: QuickAlertType.success, text: 'Đăng nhập thành công');
                       final Map<String, dynamic> responseData =jsonDecode(response.body);
                       final String token = responseData['result']['token'];
                       final Map<String, dynamic> user = responseData['result']['user'];
@@ -499,11 +563,13 @@ class _AccountPage extends State<AccountPage> {
 
                       print("Login successful");
                     } else {
+                      QuickAlert.show(context: context, type: QuickAlertType.error, text: 'Đăng nhập thất bại');
                       print('Failed to login. Status code: ${response.statusCode}');
                       print('Response body: ${response.body}');
                       throw Exception('Failed to login');
                     }
                   } catch(e) {
+                    QuickAlert.show(context: context, type: QuickAlertType.error, text: 'Đăng nhập thất bại');
                     debugPrint('hghg: ${response.body}');
                     throw Exception('Failed to login');
                   }

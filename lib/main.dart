@@ -7,12 +7,8 @@ import 'pages/favorite_page.dart';
 import 'pages/cart_page.dart';
 import 'pages/account_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:http/http.dart' as http;
-import 'package:clothing_store/model/cart/getCart.dart';
-import 'dart:convert';
 import 'provider/app_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'model/payment/screenPayment.dart';
 
 
 int? idNguoiDung;

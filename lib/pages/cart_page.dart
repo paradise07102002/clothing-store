@@ -6,16 +6,20 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:clothing_store/model/cart/getCart.dart';
 import 'package:provider/provider.dart';
+import 'package:quickalert/models/quickalert_type.dart';
+import 'package:quickalert/widgets/quickalert_dialog.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:clothing_store/main.dart';
 import 'package:clothing_store/model/cart/addCartItem.dart';
 import 'package:clothing_store/model/cart/deleteCartItem.dart' as DeleteCartItemModel;
 
+import '../model/payment/payment_form.dart';
+import '../model/payment/paypal.dart';
 import '../provider/app_localizations.dart';
 
 
 GetCart? cartData;
-
+int totalPrice = 0;
 Future<void> fetchData() async {
   SharedPreferences preferences = await SharedPreferences.getInstance();
   idNguoiDung = preferences.getInt('userId') ?? 0;
@@ -28,8 +32,8 @@ Future<void> fetchData() async {
     throw Exception('Failed to load cart');
   }
 }
-double calculateTotalPrice() {
-  double total = 0;
+int calculateTotalPrice() {
+  int total = 0;
   if (cartData != null && cartData!.result != null && cartData!.result!.cartItems != null) {
     for (var item in cartData!.result!.cartItems!) {
       total += (item.productVariant!.price ?? 0) * (item.quantity ?? 0);
@@ -45,7 +49,116 @@ class CartPage extends StatefulWidget {
 }
 
 class _CartPage extends State<CartPage> {
-  double totalPrice = 0;
+
+  void _showPaymentForm() {
+    final TextEditingController _addressController = TextEditingController();
+    final TextEditingController _promotionController = TextEditingController();
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Payment Information'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              TextField(
+                controller: _addressController,
+                decoration: InputDecoration(labelText: 'Address'),
+              ),
+              TextField(
+                controller: _promotionController,
+                decoration: InputDecoration(labelText: 'Promotion Code'),
+                keyboardType: TextInputType.number,
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 8.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'Total Price:',
+                      style: TextStyle(fontSize: 16.0),
+                    ),
+                    Text(
+                      '${calculateTotalPrice()} VND',
+                      style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: Text('Cancel'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: Text('Pay Now'),
+              onPressed: () {
+                final String address = _addressController.text;
+                final int promotion = int.tryParse(_promotionController.text) ?? 0;
+                final int total = calculateTotalPrice().toInt();
+
+                _checkout(address, promotion, total);
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Future<void> _checkout(String address, int promotion, int total) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    int? userId = prefs.getInt('userId');
+
+    if (userId != null) {
+      final String apiUrl = 'http://10.0.2.2:5117/api/Cart/${cartData!.result!.id}/CheckOut?userId=$userId';
+      final response = await http.post(
+        Uri.parse(apiUrl),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: jsonEncode(<String, dynamic>{
+          'address': address,
+          'promotionId': promotion,
+          'total': total,
+          'paymentId': 3 // Assuming PayPal has a paymentId of 1
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        var responseData = jsonDecode(response.body);
+        String paymentUrl = responseData['result']['url'];
+
+        // Navigate to the PaymentWebView screen
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => PaymentWebView(url: paymentUrl),
+          ),
+        );
+      } else {
+        debugPrint('Error code: ${response.statusCode}');
+        QuickAlert.show(
+          context: context,
+          type: QuickAlertType.error,
+          text: 'Payment failed. Please try again.',
+        );
+      }
+    } else {
+      QuickAlert.show(
+        context: context,
+        type: QuickAlertType.error,
+        text: 'User not logged in.',
+      );
+    }
+  }
 
   void _showAlertDialog(String ggg) {
     showDialog(
@@ -107,6 +220,7 @@ class _CartPage extends State<CartPage> {
           width: 350.0,
           height: 50.0,
           child: TextButton(onPressed: () {
+            _showPaymentForm();
             setState(() {
               fetchData();
               totalPrice = calculateTotalPrice();

@@ -3,20 +3,21 @@ import 'package:flutter/material.dart';
 import 'package:clothing_store/api/api_service.dart';
 import 'package:clothing_store/model/signup.dart';
 import 'package:quickalert/quickalert.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'model/resetPassword.dart';
 
-class RegisterDialog extends StatefulWidget {
+
+class RePassDialog extends StatefulWidget {
   @override
-  _RegisterDialogState createState() => _RegisterDialogState();
+  _RePassDialogState createState() => _RePassDialogState();
 }
 
-class _RegisterDialogState extends State<RegisterDialog> {
+class _RePassDialogState extends State<RePassDialog> {
   //success
-  String _lableUsername = 'Nhập username';
-  String _lableFullName = 'Nhập họ và tên';
-  String _lablePhone = 'Nhập phone';
-  String _lableEmail = 'Nhập email';
-  String _lablePassword = 'Nhập mật khẩu';
-  String _lableRePassword = 'Nhập lại mật khẩu';
+
+  String _lableOldPassword = 'Nhập mật khẩu cũ';
+  String _lablePassword = 'Nhập mật khẩu mới';
+  String _lableRePassword = 'Nhập lại mật khẩu mới';
 
 
   Color _lbColorUser = Colors.red;
@@ -27,27 +28,10 @@ class _RegisterDialogState extends State<RegisterDialog> {
   Color _lbColorRePassword = Colors.red;
 
 
-  final TextEditingController _userNameController = TextEditingController();
-  final TextEditingController _fullNameController = TextEditingController();
-  final TextEditingController _phoneNumberController = TextEditingController();
-  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _oldPasswordController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _rePasswordController = TextEditingController();
 
-  //Check email
-  bool _validateEmail(TextEditingController email) {
-    final RegExp emailRegExp = RegExp(
-      r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$',
-    );
-    return emailRegExp.hasMatch(email.text);
-  }
-  //Check phone
-  bool _isValidPhoneNumber(TextEditingController phoneNumber) {
-    final RegExp phoneRegExp = RegExp(
-      r'^\+?[0-9]{10,15}$',
-    );
-    return phoneRegExp.hasMatch(phoneNumber.text);
-  }
   //check password and re-password
   bool _arePasswordsMatching(TextEditingController password, TextEditingController rePassword) {
     return password.text == rePassword.text;
@@ -56,19 +40,19 @@ class _RegisterDialogState extends State<RegisterDialog> {
   //Udapte lable
   void _updateLabelEmail(String newLabel, Color newLabelColor) {
     setState(() {
-      _lableEmail = newLabel;
       _lbColorEmail = newLabelColor;
     });
   }
-  void _updateLabelPhone(String newLabel, Color newLabelColor) {
-    setState(() {
-      _lablePhone = newLabel;
-      _lbColorPhone = newLabelColor;
-    });
-  }
+
   void _updateLabelRePassword(String newLabel, Color newLabelColor) {
     setState(() {
       _lableRePassword = newLabel;
+      _lbColorRePassword = newLabelColor;
+    });
+  }
+  void _updateLabelPassword(String newLabel, Color newLabelColor) {
+    setState(() {
+      _lableOldPassword = newLabel;
       _lbColorRePassword = newLabelColor;
     });
   }
@@ -76,7 +60,7 @@ class _RegisterDialogState extends State<RegisterDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: Text(AppLocalizations.of(context)?.translate('register') ?? ''),
+      title: Text(AppLocalizations.of(context)?.translate('resetPassword') ?? ''),
       content: SingleChildScrollView(
         child: Column(
           children: [
@@ -85,51 +69,16 @@ class _RegisterDialogState extends State<RegisterDialog> {
               children: [
                 Container(
                   margin: const EdgeInsets.only(left: 5.0),
-                  child: Text(AppLocalizations.of(context)?.translate('username') ?? '', style: TextStyle(fontSize: 18.0,),),
                 )
               ],
             ),
             const SizedBox(height: 5.0),
-            FieldInput(textEditingController: _userNameController, title: AppLocalizations.of(context)?.translate('enterUsername') ?? '', lableColor: _lbColorUser,),
+            FieldInputPass(textEditingController: _oldPasswordController, title: _lableOldPassword, lableColor: _lbColorPassword,),
             const SizedBox(height: 10.0),
             Row(
               children: [
                 Container(
                   margin: const EdgeInsets.only(left: 5.0),
-                  child: Text(AppLocalizations.of(context)?.translate('fullName') ?? '', style: TextStyle(fontSize: 18.0,),),
-                )
-              ],
-            ),
-            const SizedBox(height: 5.0),
-            FieldInput(textEditingController: _fullNameController, title: AppLocalizations.of(context)?.translate('enterFullname') ?? '', lableColor: _lbColorFullName,),
-            const SizedBox(height: 10.0),
-            Row(
-              children: [
-                Container(
-                  margin: const EdgeInsets.only(left: 5.0),
-                  child: const Text('Email', style: TextStyle(fontSize: 18.0,),),
-                )
-              ],
-            ),
-            const SizedBox(height: 5.0),
-            FieldInput(textEditingController: _emailController, title: _lableEmail, lableColor: _lbColorEmail,),
-            const SizedBox(height: 10.0),
-            Row(
-              children: [
-                Container(
-                  margin: const EdgeInsets.only(left: 5.0),
-                  child: Text(AppLocalizations.of(context)?.translate('phone') ?? '', style: TextStyle(fontSize: 18.0,),),
-                )
-              ],
-            ),
-            const SizedBox(height: 5.0),
-            FieldInput(textEditingController: _phoneNumberController, title: _lablePhone, lableColor: _lbColorPhone,),
-            const SizedBox(height: 10.0),
-            Row(
-              children: [
-                Container(
-                  margin: const EdgeInsets.only(left: 5.0),
-                  child: Text(AppLocalizations.of(context)?.translate('password') ?? '', style: TextStyle(fontSize: 18.0,),),
                 )
               ],
             ),
@@ -140,7 +89,6 @@ class _RegisterDialogState extends State<RegisterDialog> {
               children: [
                 Container(
                   margin: const EdgeInsets.only(left: 5.0),
-                  child: Text(AppLocalizations.of(context)?.translate('confirmPassword') ?? '', style: TextStyle(fontSize: 18.0,),),
                 )
               ],
             ),
@@ -160,43 +108,33 @@ class _RegisterDialogState extends State<RegisterDialog> {
           onPressed: () async{
             // Perform registration logic here
             {
-              if (_validateEmail(_emailController) == false) {
-                setState(() {
-                  _updateLabelEmail('Email không hợp lệ', Colors.red);
-                  return;
-                });
-              }
-              else if (_isValidPhoneNumber(_phoneNumberController) == false) {
-                _updateLabelPhone('Số điện thoại không hợp lệ', Colors.red);
-                return;
-              }
-              else if (_arePasswordsMatching(_passwordController, _rePasswordController) == false) {
+              if (_oldPasswordController.text.trim() == null) {
+                _updateLabelPassword('Mật khẩu cũ không chính xác', Colors.red);
+              } else if (_arePasswordsMatching(_passwordController, _rePasswordController) == false) {
                 _updateLabelRePassword('Mật khẩu mới không trùng khớp', Colors.red);
                 return;
               } else {
-                _updateLabelEmail('Nhập email', Colors.black);
-                _updateLabelPhone('Nhập số điện thoại', Colors.black);
                 _updateLabelRePassword('Nhập lại mật khẩu', Colors.black);
 
-                SignUp newUser = SignUp(
-                  userName: _userNameController.text,
-                  fullName: _fullNameController.text,
-                  phoneNumber: _phoneNumberController.text,
-                  email: _emailController.text,
-                  password: _passwordController.text,
+                SharedPreferences prefs = await SharedPreferences.getInstance();
+                int idUser = prefs.getInt('userId') ?? 0;
+                ResetPassword resetPass = ResetPassword(
+                  id: idUser,
+                  oldPassword: _oldPasswordController.text,
+                  newPassword: _passwordController.text,
                 );
                 try {
-                  await registerUser(newUser);
-                  QuickAlert.show(context: context, type: QuickAlertType.success, text: 'Đăng ký thành công');
+                  await resetPassword(resetPass);
+                  QuickAlert.show(context: context, type: QuickAlertType.success, text: 'Đổi mật khẩu thành công');
                 } catch (e) {
-                  QuickAlert.show(context: context, type: QuickAlertType.error, text: 'Đăng ký thất bại');
+                  QuickAlert.show(context: context, type: QuickAlertType.error, text: 'Lỗi');
                 }
               }
             }
             // Close the dialog
             // Navigator.of(context).pop();
           },
-          child: Text(AppLocalizations.of(context)?.translate('register') ?? ''),
+          child: Text(AppLocalizations.of(context)?.translate('change') ?? ''),
         ),
       ],
     );
@@ -204,10 +142,6 @@ class _RegisterDialogState extends State<RegisterDialog> {
 
   @override
   void dispose() {
-    _userNameController.dispose();
-    _fullNameController.dispose();
-    _phoneNumberController.dispose();
-    _emailController.dispose();
     _passwordController.dispose();
     _rePasswordController.dispose();
     super.dispose();

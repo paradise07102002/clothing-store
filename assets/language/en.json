@@ -11,6 +11,9 @@
   "login": "Login",
   "username": "Username",
   "enterUsername": "Enter Username",
+  "enterFullname": "Enter fullname",
+  "enterEmail": "Enter Email",
+  "enterPhone": "Enter Phone",
   "password": "Password",
   "enterPassword": "Enter Password",
   "registerNow": "Register now",
@@ -27,7 +30,17 @@
   "fashionShop": "Fashion Shop",
   "newProduct": "New Product",
   "productDetail": "Product detail",
-  "register": "Register"
+  "register": "Register",
+  "fullName": "Full name",
+  "phone": "Phone",
+  "confirmPassword": "Confirm password",
+  "cancel": "Cancel",
+  "change": "Thay đổi",
+  "change": "Change",
+  "changeLanguage": "Change Language",
+  "historyPurchase": "History Purchase"
+
+
 
 }
 
